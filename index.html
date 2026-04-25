@@ -70,6 +70,25 @@
     .topic-stars { font-size:1.2rem; }
     .btn-restart { background:linear-gradient(135deg,#7c4dff,#651fff); border:none; color:white; font-size:1.2rem; font-weight:600; padding:15px 40px; border-radius:50px; cursor:pointer; margin-top:20px; transition:transform 0.2s; }
     .btn-restart:hover { transform:scale(1.05); }
+    .btn-secret { background:transparent; border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.3); font-size:0.7rem; padding:6px 16px; border-radius:20px; cursor:pointer; margin-top:30px; transition:all 0.3s; }
+    .btn-secret:hover { color:rgba(255,255,255,0.6); border-color:rgba(255,255,255,0.3); }
+    #reporte-screen { display:none; text-align:center; width:100%; }
+    .reporte-title { font-size:1.8rem; font-weight:700; color:#90caf9; margin-bottom:5px; }
+    .reporte-sub { font-size:0.9rem; opacity:0.6; margin-bottom:20px; }
+    .reporte-card { background:rgba(255,255,255,0.08); border-radius:20px; padding:20px; margin:15px 0; text-align:left; }
+    .reporte-card h3 { font-size:1rem; color:#90caf9; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; }
+    .reporte-fila { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.07); font-size:0.9rem; }
+    .reporte-fila:last-child { border-bottom:none; }
+    .reporte-pregunta { flex:1; opacity:0.85; font-size:0.85rem; }
+    .reporte-stats { display:flex; gap:12px; align-items:center; }
+    .badge-ok { background:rgba(76,175,80,0.3); color:#a5d6a7; padding:3px 10px; border-radius:10px; font-size:0.8rem; }
+    .badge-fail { background:rgba(244,67,54,0.3); color:#ef9a9a; padding:3px 10px; border-radius:10px; font-size:0.8rem; }
+    .badge-warn { background:rgba(255,152,0,0.3); color:#ffcc80; padding:3px 10px; border-radius:10px; font-size:0.8rem; }
+    .resumen-fila { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.07); font-size:0.95rem; }
+    .resumen-fila:last-child { border-bottom:none; }
+    .btn-cerrar-reporte { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white; font-size:1rem; padding:12px 30px; border-radius:50px; cursor:pointer; margin-top:20px; transition:transform 0.2s; }
+    .btn-cerrar-reporte:hover { transform:scale(1.05); }
+    .btn-borrar { background:rgba(244,67,54,0.2); border:1px solid rgba(244,67,54,0.4); color:#ef9a9a; font-size:0.8rem; padding:8px 20px; border-radius:20px; cursor:pointer; margin-top:10px; }
   </style>
 </head>
 <body>
@@ -166,6 +185,28 @@
     <div class="results-card" id="results-breakdown"></div>
     <div style="margin-top:20px;font-size:1.1rem;" id="final-message"></div>
     <button class="btn-restart" onclick="restartGame()">¡Intentar de nuevo! 🔄</button>
+    <br>
+    <button class="btn-secret" onclick="mostrarReporte()">📊 ver reporte</button>
+  </div>
+
+  <!-- PANTALLA DE REPORTE (PAPÁ) -->
+  <div id="reporte-screen">
+    <div class="reporte-title">📊 Reporte de Gera</div>
+    <div class="reporte-sub" id="reporte-rondas">Cargando...</div>
+
+    <div class="reporte-card">
+      <h3>📋 Resumen por tema</h3>
+      <div id="reporte-temas"></div>
+    </div>
+
+    <div class="reporte-card">
+      <h3>🔍 Detalle por pregunta</h3>
+      <div id="reporte-preguntas"></div>
+    </div>
+
+    <button class="btn-cerrar-reporte" onclick="cerrarReporte()">← Volver a resultados</button>
+    <br>
+    <button class="btn-borrar" onclick="borrarHistorial()">🗑️ Borrar historial</button>
   </div>
 
 </div>
@@ -266,22 +307,40 @@ const ceroFallas = [
 
 let currentQ = 0, score = 0, topicResults = {}, questionOrder = [];
 
+// ── HISTORIAL ──────────────────────────────────────────
+function cargarHistorial() {
+  const raw = localStorage.getItem('gera_historial');
+  return raw ? JSON.parse(raw) : { rondas: 0, preguntas: {} };
+}
+
+function guardarRonda(resultados) {
+  const h = cargarHistorial();
+  h.rondas += 1;
+  resultados.forEach(r => {
+    if (!h.preguntas[r.texto]) {
+      h.preguntas[r.texto] = { topic: r.topic, correctas: 0, falladas: 0 };
+    }
+    if (r.ok) h.preguntas[r.texto].correctas++;
+    else       h.preguntas[r.texto].falladas++;
+  });
+  localStorage.setItem('gera_historial', JSON.stringify(h));
+}
+
+// ── JUEGO ──────────────────────────────────────────────
 function startDiagnostic() {
   questionOrder = [...questions].sort(() => Math.random() - 0.5);
+  currentQ = 0; score = 0; topicResults = {};
   document.getElementById('welcome-screen').style.display = 'none';
   document.getElementById('question-screen').style.display = 'block';
   showQuestion();
 }
 
 function restartGame() {
-  currentQ = 0;
-  score = 0;
-  topicResults = {};
-  questionOrder = [];
   document.getElementById('results-screen').style.display = 'none';
-  document.getElementById('question-screen').style.display = 'none';
   document.getElementById('welcome-screen').style.display = 'block';
 }
+
+let rondaResultados = [];
 
 function showQuestion() {
   if (currentQ >= questionOrder.length) { showResults(); return; }
@@ -292,9 +351,9 @@ function showQuestion() {
   document.getElementById('question-counter').textContent = `Pregunta ${currentQ+1} de ${questionOrder.length}`;
   document.getElementById('score-display').textContent = score;
 
-  const card = document.getElementById('question-card');
+  const card   = document.getElementById('question-card');
   const bubble = document.getElementById('guide-bubble');
-  const badge = document.getElementById('topic-badge');
+  const badge  = document.getElementById('topic-badge');
 
   if (isVillain) {
     card.classList.add('villain-mode');
@@ -311,7 +370,7 @@ function showQuestion() {
     document.getElementById('guide-message').textContent = q.coqui;
   }
 
-  document.getElementById('topic-badge').textContent = q.topic;
+  badge.textContent = q.topic;
   document.getElementById('question-text').textContent = q.text;
 
   const grid = document.getElementById('options-grid');
@@ -320,12 +379,12 @@ function showQuestion() {
     const btn = document.createElement('button');
     btn.className = 'option-btn';
     btn.textContent = opt;
-    btn.onclick = () => checkAnswer(opt, q.answer, q.topic, q.level);
+    btn.onclick = () => checkAnswer(opt, q.answer, q.topic, q.text);
     grid.appendChild(btn);
   });
 }
 
-function checkAnswer(selected, correct, topic, level) {
+function checkAnswer(selected, correct, topic, texto) {
   document.querySelectorAll('.option-btn').forEach(b => b.onclick = null);
   if (!topicResults[topic]) topicResults[topic] = {correct:0, total:0};
   topicResults[topic].total++;
@@ -336,12 +395,14 @@ function checkAnswer(selected, correct, topic, level) {
     if (String(b.textContent) === String(selected) && !ok) b.classList.add('wrong');
   });
 
+  rondaResultados.push({ texto, topic, ok });
+
   if (ok) {
     score++;
     topicResults[topic].correct++;
     setTimeout(showCleto, 400);
   } else {
-    setTimeout(() => showCoquiCeroFalla(), 600);
+    setTimeout(showCoquiCeroFalla, 600);
   }
 }
 
@@ -369,19 +430,22 @@ function showCoquiCeroFalla() {
 }
 
 function showResults() {
+  guardarRonda(rondaResultados);
   document.getElementById('question-screen').style.display = 'none';
   document.getElementById('results-screen').style.display = 'block';
+
   const breakdown = document.getElementById('results-breakdown');
   breakdown.innerHTML = '';
   Object.entries(topicResults).forEach(([topic, data]) => {
     const pct = data.correct / data.total;
-    const stars = pct >= 0.8 ? '⭐⭐⭐' : pct >= 0.5 ? '⭐⭐' : '⭐';
+    const stars  = pct >= 0.8 ? '⭐⭐⭐' : pct >= 0.5 ? '⭐⭐' : '⭐';
     const status = pct >= 0.8 ? '¡Dominado!' : pct >= 0.5 ? 'Casi, sigue practicando' : 'Aquí podemos mejorar';
     const row = document.createElement('div');
     row.className = 'topic-result';
     row.innerHTML = `<div><div class="topic-name">${topic}</div><div style="font-size:0.8rem;opacity:0.6;">${status}</div></div><div class="topic-stars">${stars}</div>`;
     breakdown.appendChild(row);
   });
+
   const pct = score / questionOrder.length;
   document.getElementById('final-message').innerHTML = pct >= 0.8
     ? '🏆 <strong>¡Gera eres un genio de las matemáticas!</strong><br>Coqui y Cleto están muy orgullosos. ¡Coqui Cero está molesto! 😈'
@@ -390,6 +454,67 @@ function showResults() {
     : '🚀 <strong>¡Gera, estás empezando una gran aventura!</strong><br>¡Con práctica le ganarás a Coqui Cero!';
 }
 
+// ── REPORTE ────────────────────────────────────────────
+function mostrarReporte() {
+  const h = cargarHistorial();
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('reporte-screen').style.display = 'block';
+  document.getElementById('reporte-rondas').textContent = `Total de rondas jugadas: ${h.rondas}`;
+
+  // Resumen por tema
+  const temas = {};
+  Object.values(h.preguntas).forEach(p => {
+    if (!temas[p.topic]) temas[p.topic] = { correctas:0, falladas:0 };
+    temas[p.topic].correctas += p.correctas;
+    temas[p.topic].falladas  += p.falladas;
+  });
+
+  const temasDiv = document.getElementById('reporte-temas');
+  temasDiv.innerHTML = '';
+  Object.entries(temas).sort((a,b) => b[1].falladas - a[1].falladas).forEach(([tema, d]) => {
+    const total = d.correctas + d.falladas;
+    const pct   = total > 0 ? Math.round(d.correctas / total * 100) : 0;
+    const badge = pct >= 80 ? `<span class="badge-ok">✅ ${pct}%</span>`
+                : pct >= 50 ? `<span class="badge-warn">⚠️ ${pct}%</span>`
+                :             `<span class="badge-fail">❌ ${pct}%</span>`;
+    const fila = document.createElement('div');
+    fila.className = 'resumen-fila';
+    fila.innerHTML = `<span>${tema}</span><div style="display:flex;gap:10px;align-items:center;">${badge}<span style="font-size:0.8rem;opacity:0.6;">${d.correctas}✅ ${d.falladas}❌</span></div>`;
+    temasDiv.appendChild(fila);
+  });
+
+  // Detalle por pregunta
+  const preguntasDiv = document.getElementById('reporte-preguntas');
+  preguntasDiv.innerHTML = '';
+  Object.entries(h.preguntas)
+    .sort((a,b) => b[1].falladas - a[1].falladas)
+    .forEach(([texto, d]) => {
+      const total = d.correctas + d.falladas;
+      const pct   = total > 0 ? Math.round(d.correctas / total * 100) : 0;
+      const badge = pct >= 80 ? `<span class="badge-ok">${pct}%</span>`
+                  : pct >= 50 ? `<span class="badge-warn">${pct}%</span>`
+                  :             `<span class="badge-fail">${pct}%</span>`;
+      const fila = document.createElement('div');
+      fila.className = 'reporte-fila';
+      fila.innerHTML = `<div class="reporte-pregunta">${texto.replace(/\n/,' ')}</div><div class="reporte-stats">${badge}<span style="font-size:0.75rem;opacity:0.5;">${d.correctas}✅ ${d.falladas}❌</span></div>`;
+      preguntasDiv.appendChild(fila);
+    });
+}
+
+function cerrarReporte() {
+  document.getElementById('reporte-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+}
+
+function borrarHistorial() {
+  if (confirm('¿Borrar todo el historial de Gera?')) {
+    localStorage.removeItem('gera_historial');
+    alert('Historial borrado.');
+    cerrarReporte();
+  }
+}
+
+// ── ESTRELLAS ──────────────────────────────────────────
 const starsDiv = document.getElementById('stars');
 for (let i = 0; i < 80; i++) {
   const s = document.createElement('div');
