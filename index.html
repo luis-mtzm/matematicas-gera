@@ -6,225 +6,197 @@
   <title>Matemáticas Mágicas 🚀</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #06071a; --gold: #ffd700; --green: #4cdf7a;
-      --red: #ff4f6a; --purple: #b96eff; --blue: #4fc3f7; --orange: #ff8c42;
-    }
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family:'Nunito',sans-serif; background:var(--bg); min-height:100vh; color:white; overflow-x:hidden; }
-    #starfield { position:fixed; inset:0; pointer-events:none; z-index:0; }
-    .star { position:absolute; background:white; border-radius:50%; animation:twinkle var(--dur,2s) infinite alternate; }
-    @keyframes twinkle  { from{opacity:.1} to{opacity:.9} }
-    @keyframes float    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-    @keyframes popIn    { from{transform:scale(.4) rotate(-5deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
-    @keyframes shake    { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 60%{transform:translateX(8px)} }
-    @keyframes pulseG   { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
-    @keyframes slideUp  { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
-    @keyframes bossIn   { 0%{transform:scale(0) rotate(20deg);opacity:0} 70%{transform:scale(1.15) rotate(-3deg)} 100%{transform:scale(1) rotate(0);opacity:1} }
-    @keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:.4} }
-    @keyframes signRescue { 0%{transform:scale(0) rotate(-20deg);opacity:0} 60%{transform:scale(1.3) rotate(5deg);opacity:1} 80%{transform:scale(.95)} 100%{transform:scale(1) rotate(0);opacity:1} }
-    @keyframes glow     { 0%,100%{text-shadow:0 0 10px var(--gold),0 0 20px var(--gold)} 50%{text-shadow:0 0 30px var(--gold),0 0 60px rgba(255,215,0,.5)} }
-    @keyframes rainbowPulse { 0%{filter:hue-rotate(0deg)} 100%{filter:hue-rotate(360deg)} }
-
-    .screen { display:none; position:relative; z-index:1; min-height:100vh; }
-    .screen.active { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
-
-    /* ── NOMBRE ── */
-    #s-nombre { text-align:center; }
-    .nb-logo { font-family:'Fredoka One',cursive; font-size:2rem; color:var(--gold); margin-bottom:8px; }
-    .nb-sub  { font-size:1rem; opacity:.65; margin-bottom:30px; }
-    .nb-input-wrap { position:relative; margin-bottom:20px; }
-    .nb-input { font-family:'Fredoka One',cursive; font-size:1.6rem; text-align:center; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.3); border-radius:20px; color:white; padding:14px 24px; width:280px; outline:none; transition:border .2s; }
-    .nb-input:focus { border-color:var(--gold); }
-    .nb-input::placeholder { opacity:.4; }
-    .nb-hint { font-size:.8rem; opacity:.5; margin-top:8px; }
-    .btn-main { font-family:'Fredoka One',cursive; background:linear-gradient(135deg,#ff6b35,#ffd700); border:none; color:#1a0000; font-size:1.3rem; padding:14px 44px; border-radius:50px; cursor:pointer; transition:transform .2s,box-shadow .2s; box-shadow:0 6px 24px rgba(255,107,53,.45); }
-    .btn-main:hover { transform:scale(1.06); }
-    .btn-main:disabled { opacity:.4; cursor:default; transform:none; }
-    .btn-ghost { background:transparent; border:1px solid rgba(255,255,255,.2); color:rgba(255,255,255,.5); font-size:.85rem; padding:8px 22px; border-radius:30px; cursor:pointer; transition:all .2s; }
-    .btn-ghost:hover { color:white; border-color:rgba(255,255,255,.5); }
-
-    /* ── INTRO ── */
-    #s-intro { text-align:center; max-width:480px; }
-    .intro-tag { font-size:.85rem; color:var(--blue); opacity:.8; letter-spacing:.1em; text-transform:uppercase; margin-bottom:12px; }
-    .intro-title { font-family:'Fredoka One',cursive; font-size:2.4rem; color:var(--gold); animation:glow 2s infinite; line-height:1.2; margin-bottom:10px; }
-    .intro-name  { font-family:'Fredoka One',cursive; font-size:3rem; color:white; margin-bottom:18px; }
-    .intro-story { font-size:1rem; line-height:1.65; opacity:.85; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); border-radius:18px; padding:18px 22px; margin-bottom:24px; }
-    .intro-story strong { color:var(--gold); }
-    .intro-signs { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:24px; }
-    .sign-cage { width:52px; height:52px; border-radius:14px; background:rgba(100,0,150,.3); border:2px solid var(--purple); display:flex; align-items:center; justify-content:center; font-size:1.6rem; position:relative; }
-    .sign-cage::after { content:'🔒'; position:absolute; top:-8px; right:-8px; font-size:.8rem; }
-    .btn-adventure { font-family:'Fredoka One',cursive; background:linear-gradient(135deg,#7c4dff,var(--purple)); border:none; color:white; font-size:1.3rem; padding:14px 44px; border-radius:50px; cursor:pointer; box-shadow:0 6px 24px rgba(185,110,255,.4); transition:transform .2s; }
-    .btn-adventure:hover { transform:scale(1.06); }
-
-    /* ── MAP ── */
-    #s-map { padding:0; }
-    .map-header { position:sticky; top:0; z-index:10; width:100%; background:linear-gradient(180deg,rgba(6,7,26,.98),transparent); padding:14px 20px 10px; display:flex; align-items:center; gap:14px; }
-    .map-coins { font-family:'Fredoka One',cursive; font-size:1.1rem; color:var(--gold); display:flex; align-items:center; gap:5px; }
-    .map-title  { font-family:'Fredoka One',cursive; font-size:1.3rem; flex:1; text-align:center; }
-    .map-signs-mini { display:flex; gap:6px; }
-    .sign-mini { width:28px; height:28px; border-radius:8px; background:rgba(100,0,150,.3); border:1.5px solid rgba(185,110,255,.4); display:flex; align-items:center; justify-content:center; font-size:.9rem; transition:all .3s; }
-    .sign-mini.freed { background:rgba(255,215,0,.2); border-color:var(--gold); }
-    .map-scroll { width:100%; max-width:440px; margin:0 auto; padding:20px 20px 80px; }
-
-    .world-card { border-radius:24px; padding:18px; margin-bottom:16px; position:relative; overflow:hidden; transition:transform .2s; }
-    .world-card.locked { opacity:.4; filter:grayscale(.7); }
-    .world-card:not(.locked):hover { transform:scale(1.01); }
-    .world-0 { background:linear-gradient(135deg,#1565c0,#1e88e5); border:2px solid #42a5f5; }
-    .world-1 { background:linear-gradient(135deg,#2e7d32,#43a047); border:2px solid #66bb6a; }
-    .world-2 { background:linear-gradient(135deg,#6a1b9a,#8e24aa); border:2px solid #ab47bc; }
-    .world-3 { background:linear-gradient(135deg,#e65100,#f57c00); border:2px solid #ffa726; }
-    .world-4 { background:linear-gradient(135deg,#880e4f,#c2185b); border:2px solid #f06292; }
-    .world-top  { display:flex; align-items:center; gap:14px; }
-    .world-emoji { font-size:2.2rem; line-height:1; }
-    .world-info  { flex:1; }
-    .world-name  { font-family:'Fredoka One',cursive; font-size:1.2rem; }
-    .world-desc  { font-size:.8rem; opacity:.75; margin-top:2px; }
-    .world-progress { font-size:.78rem; opacity:.6; margin-top:3px; }
-    .lock-icon   { font-size:1.8rem; }
-    .levels-row  { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; align-items:center; }
-    .lvl-dot { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.85rem; border:2px solid rgba(255,255,255,.3); transition:transform .15s; cursor:pointer; position:relative; }
-    .lvl-dot.done   { background:rgba(76,223,122,.3); border-color:var(--green); }
-    .lvl-dot.done::after { content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:1rem; }
-    .lvl-dot.current { background:rgba(255,215,0,.25); border-color:var(--gold); animation:pulse 1.5s infinite; }
-    .lvl-dot.locked  { background:rgba(0,0,0,.3); border-color:rgba(255,255,255,.12); cursor:default; opacity:.45; }
-    .lvl-dot.razonado { background:rgba(79,195,247,.12); border-color:var(--blue); }
-    .lvl-dot.razonado.done { background:rgba(79,195,247,.28); }
-    .lvl-dot.boss  { background:rgba(185,110,255,.25); border-color:var(--purple); font-size:1rem; }
-    .lvl-dot.boss.done { background:rgba(185,110,255,.4); }
-    .lvl-dot:hover:not(.locked) { transform:scale(1.15); }
-    .sign-reward-dot { font-size:.9rem; margin-left:2px; opacity:.7; }
-    .world-complete-banner { background:rgba(76,223,122,.12); border:1px solid var(--green); border-radius:10px; text-align:center; padding:6px 12px; margin-top:10px; font-size:.85rem; color:var(--green); font-weight:700; }
-
-    /* ── QUESTION ── */
-    #s-question { max-width:500px; width:100%; margin:0 auto; }
-    .q-header { width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:.85rem; opacity:.7; }
-    .q-score  { background:rgba(255,255,255,.12); padding:5px 14px; border-radius:20px; font-weight:700; }
-    .q-hearts { font-size:1.1rem; letter-spacing:2px; }
-    .progress-wrap { width:100%; height:10px; background:rgba(255,255,255,.15); border-radius:5px; margin-bottom:14px; overflow:hidden; }
-    .progress-fill { height:100%; border-radius:5px; transition:width .4s ease; }
-    .pf-normal { background:linear-gradient(90deg,#4cdf7a,#8bc34a); }
-    .pf-boss   { background:linear-gradient(90deg,var(--purple),#f06292); }
-    .q-card { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:22px; padding:22px; width:100%; text-align:center; animation:slideUp .3s ease; }
-    .q-card.boss-mode { border-color:var(--purple); background:rgba(100,0,150,.2); }
-    .guide-bubble { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.06); border-radius:14px; padding:10px 14px; margin-bottom:14px; text-align:left; }
-    .guide-bubble.villain { background:rgba(100,0,150,.22); border:1px solid var(--purple); }
-    .guide-img-sm { width:50px; height:50px; object-fit:contain; flex-shrink:0; }
-    .guide-msg { font-size:.88rem; line-height:1.4; }
-    .story-bubble { display:none; background:rgba(13,59,110,.35); border:1px solid rgba(79,195,247,.3); border-radius:14px; padding:12px 16px; margin-bottom:12px; font-size:.88rem; line-height:1.55; color:rgba(255,255,255,.88); }
-    .story-bubble.active { display:block; animation:slideUp .3s ease; }
-    .story-label { font-size:.7rem; font-weight:700; color:var(--blue); letter-spacing:.05em; text-transform:uppercase; margin-bottom:4px; }
-    .topic-pill { display:inline-block; padding:3px 14px; border-radius:20px; font-size:.75rem; font-weight:700; margin-bottom:10px; }
-    .tp-normal { background:rgba(255,215,0,.18); color:var(--gold); }
-    .tp-boss   { background:rgba(185,110,255,.2); color:var(--purple); }
-    .q-text { font-family:'Fredoka One',cursive; font-size:1.9rem; line-height:1.35; white-space:pre-line; margin:8px 0 18px; }
-    .opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .opt-btn { background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.2); color:white; font-family:'Fredoka One',cursive; font-size:1.5rem; padding:18px; border-radius:14px; cursor:pointer; transition:all .15s; }
-    .opt-btn:hover   { background:rgba(255,255,255,.22); transform:scale(1.04); }
-    .opt-btn.correct { background:rgba(76,223,122,.35); border-color:var(--green); animation:pulseG .5s; }
-    .opt-btn.wrong   { background:rgba(255,79,106,.35); border-color:var(--red); animation:shake .4s; }
-
-    /* ── SIGN RESCUE OVERLAY ── */
-    .overlay { display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.7); flex-direction:column; align-items:center; justify-content:center; }
-    .overlay.active { display:flex; }
-    .rescue-box { background:linear-gradient(135deg,#0d1f7a,#1a2f9a); border:3px solid var(--gold); border-radius:28px; padding:30px 28px; text-align:center; max-width:320px; animation:popIn .4s cubic-bezier(.34,1.56,.64,1); }
-    .rescue-sign { font-size:5rem; line-height:1; animation:signRescue .6s cubic-bezier(.34,1.56,.64,1) forwards; display:block; margin:10px auto 14px; }
-    .rescue-title { font-family:'Fredoka One',cursive; font-size:1.5rem; color:var(--gold); margin-bottom:6px; }
-    .rescue-desc  { font-size:.9rem; opacity:.8; line-height:1.45; margin-bottom:16px; }
-    .btn-rescue-ok { font-family:'Fredoka One',cursive; background:linear-gradient(135deg,#ff6b35,var(--gold)); border:none; color:#1a0000; font-size:1rem; padding:10px 28px; border-radius:30px; cursor:pointer; transition:transform .2s; }
-    .btn-rescue-ok:hover { transform:scale(1.06); }
-
-    /* ── CLETO OVERLAY ── */
-    .cleto-popup { background:linear-gradient(135deg,#0d1f7a,#1a2f9a); border:3px solid var(--gold); border-radius:28px; padding:26px 22px; text-align:center; max-width:290px; animation:popIn .4s cubic-bezier(.34,1.56,.64,1); }
-    .cel-text  { font-family:'Fredoka One',cursive; font-size:1.4rem; color:var(--gold); margin-bottom:5px; }
-    .cel-sub   { font-size:.9rem; opacity:.85; }
-    .cel-stars { font-size:1.6rem; margin:8px 0; }
-    .cero-popup { background:linear-gradient(135deg,#1a0030,#3d006a); border:3px solid var(--purple); border-radius:28px; padding:26px 22px; text-align:center; max-width:290px; animation:popIn .4s cubic-bezier(.34,1.56,.64,1); }
-    .cero-text { font-family:'Fredoka One',cursive; font-size:1.3rem; color:var(--purple); margin-bottom:5px; }
-    .cero-sub  { font-size:.88rem; opacity:.85; }
-    .btn-accept { font-family:'Fredoka One',cursive; background:linear-gradient(135deg,#7b1fa2,#ab47bc); border:none; color:white; font-size:.95rem; padding:9px 26px; border-radius:30px; cursor:pointer; margin-top:12px; transition:transform .2s; }
-    .btn-accept:hover { transform:scale(1.06); }
-
-    /* ── BOSS INTRO ── */
-    #s-boss-intro { text-align:center; max-width:420px; }
-    .boss-intro-img { width:150px; height:150px; object-fit:contain; animation:bossIn .6s cubic-bezier(.34,1.56,.64,1) forwards; margin:0 auto 14px; display:block; }
-    .boss-title { font-family:'Fredoka One',cursive; font-size:1rem; color:var(--purple); opacity:.8; margin-bottom:5px; }
-    .boss-name  { font-family:'Fredoka One',cursive; font-size:2.4rem; color:var(--purple); text-shadow:0 0 30px rgba(185,110,255,.6); margin-bottom:12px; }
-    .boss-taunt { font-size:.95rem; opacity:.8; line-height:1.5; margin-bottom:22px; background:rgba(100,0,150,.2); border:1px solid rgba(185,110,255,.3); border-radius:16px; padding:14px; }
-    .btn-boss-fight { font-family:'Fredoka One',cursive; background:linear-gradient(135deg,#7b1fa2,var(--purple)); border:none; color:white; font-size:1.2rem; padding:13px 38px; border-radius:50px; cursor:pointer; transition:transform .2s; box-shadow:0 6px 24px rgba(185,110,255,.4); }
-    .btn-boss-fight:hover { transform:scale(1.06); }
-
-    /* ── LEVEL DONE ── */
-    #s-level-done { text-align:center; max-width:380px; }
-    .ld-emoji { font-size:3.5rem; margin-bottom:10px; }
-    .ld-title { font-family:'Fredoka One',cursive; font-size:1.9rem; color:var(--gold); margin-bottom:6px; }
-    .ld-sub   { opacity:.75; margin-bottom:18px; font-size:.95rem; }
-    .ld-stars { font-size:2.2rem; letter-spacing:6px; margin:8px 0; }
-    .ld-coins { font-family:'Fredoka One',cursive; font-size:1.2rem; color:var(--gold); margin-bottom:22px; }
-    .btn-continue { font-family:'Fredoka One',cursive; background:linear-gradient(135deg,#ff6b35,var(--gold)); border:none; color:#1a0000; font-size:1.1rem; padding:13px 38px; border-radius:50px; cursor:pointer; transition:transform .2s; }
-    .btn-continue:hover { transform:scale(1.06); }
-
-    /* ── BOSS WIN ── */
-    #s-boss-win { text-align:center; max-width:400px; }
-    .bw-glow  { font-size:2.8rem; margin-bottom:8px; animation:pulse 1s infinite; }
-    .bw-title { font-family:'Fredoka One',cursive; font-size:2.2rem; background:linear-gradient(135deg,var(--gold),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:6px; }
-    .bw-world { font-size:.95rem; opacity:.75; margin-bottom:14px; }
-    .bw-card  { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:20px; padding:18px; margin-bottom:18px; }
-    .bw-stat  { display:flex; justify-content:space-between; font-size:.9rem; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.07); }
-    .bw-stat:last-child { border:none; }
-    .bw-val   { font-weight:700; color:var(--gold); }
-
-    /* ── VICTORIA FINAL ── */
-    #s-victoria { text-align:center; max-width:480px; }
-    .vic-crown  { font-size:4rem; animation:glow 2s infinite; margin-bottom:10px; }
-    .vic-title  { font-family:'Fredoka One',cursive; font-size:2.4rem; background:linear-gradient(135deg,var(--gold),var(--purple),var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:6px; }
-    .vic-sub    { font-size:1rem; opacity:.8; margin-bottom:24px; line-height:1.55; }
-    .signs-gallery { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:20px 0 28px; }
-    .sign-freed { width:60px; height:60px; border-radius:16px; background:rgba(255,215,0,.15); border:2px solid var(--gold); display:flex; align-items:center; justify-content:center; font-size:1.8rem; animation:signRescue .5s ease both; }
-    .vic-stars  { font-size:1.8rem; letter-spacing:8px; margin-bottom:18px; animation:rainbowPulse 3s linear infinite; }
-    .btn-replay { font-family:'Fredoka One',cursive; background:linear-gradient(135deg,#7c4dff,var(--purple)); border:none; color:white; font-size:1.1rem; padding:13px 36px; border-radius:50px; cursor:pointer; transition:transform .2s; }
-    .btn-replay:hover { transform:scale(1.06); }
-
-    /* ── DIAG ── */
-    #s-diag-q { max-width:500px; width:100%; margin:0 auto; }
-    .diag-back { background:transparent; border:none; color:rgba(255,255,255,.45); font-size:.88rem; cursor:pointer; margin-bottom:10px; padding:4px; }
-    .diag-back:hover { color:white; }
+    :root{--bg:#06071a;--gold:#ffd700;--green:#4cdf7a;--red:#ff4f6a;--purple:#b96eff;--blue:#4fc3f7;--orange:#ff8c42;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;color:white;overflow-x:hidden;}
+    #starfield{position:fixed;inset:0;pointer-events:none;z-index:0;}
+    .star{position:absolute;background:white;border-radius:50%;animation:twinkle var(--dur,2s) infinite alternate;}
+    @keyframes twinkle{from{opacity:.1}to{opacity:.9}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    @keyframes popIn{from{transform:scale(.4) rotate(-5deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}60%{transform:translateX(8px)}}
+    @keyframes pulseG{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+    @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+    @keyframes bossIn{0%{transform:scale(0) rotate(20deg);opacity:0}70%{transform:scale(1.15) rotate(-3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    @keyframes signRescue{0%{transform:scale(0) rotate(-20deg);opacity:0}60%{transform:scale(1.3) rotate(5deg);opacity:1}80%{transform:scale(.95)}100%{transform:scale(1) rotate(0);opacity:1}}
+    @keyframes glow{0%,100%{text-shadow:0 0 10px var(--gold),0 0 20px var(--gold)}50%{text-shadow:0 0 30px var(--gold),0 0 60px rgba(255,215,0,.5)}}
+    @keyframes tierUp{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+    .screen{display:none;position:relative;z-index:1;min-height:100vh;}
+    .screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+    #s-nombre{text-align:center;}
+    .nb-logo{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--gold);margin-bottom:8px;}
+    .nb-sub{font-size:1rem;opacity:.65;margin-bottom:30px;}
+    .nb-input{font-family:'Fredoka One',cursive;font-size:1.6rem;text-align:center;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);border-radius:20px;color:white;padding:14px 24px;width:280px;outline:none;transition:border .2s;}
+    .nb-input:focus{border-color:var(--gold);}
+    .nb-input::placeholder{opacity:.4;}
+    .nb-hint{font-size:.8rem;opacity:.5;margin-top:8px;}
+    .btn-main{font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#ff6b35,#ffd700);border:none;color:#1a0000;font-size:1.3rem;padding:14px 44px;border-radius:50px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 6px 24px rgba(255,107,53,.45);}
+    .btn-main:hover{transform:scale(1.06);}
+    .btn-main:disabled{opacity:.4;cursor:default;transform:none;}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.5);font-size:.85rem;padding:8px 22px;border-radius:30px;cursor:pointer;transition:all .2s;}
+    .btn-ghost:hover{color:white;border-color:rgba(255,255,255,.5);}
+    #s-intro{text-align:center;max-width:480px;}
+    .intro-tag{font-size:.85rem;color:var(--blue);opacity:.8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;}
+    .intro-title{font-family:'Fredoka One',cursive;font-size:2.4rem;color:var(--gold);animation:glow 2s infinite;line-height:1.2;margin-bottom:10px;}
+    .intro-name{font-family:'Fredoka One',cursive;font-size:3rem;color:white;margin-bottom:18px;}
+    .intro-story{font-size:1rem;line-height:1.65;opacity:.85;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:18px 22px;margin-bottom:24px;}
+    .intro-story strong{color:var(--gold);}
+    .intro-signs{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+    .sign-cage{width:52px;height:52px;border-radius:14px;background:rgba(100,0,150,.3);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:1.6rem;position:relative;}
+    .sign-cage::after{content:'🔒';position:absolute;top:-8px;right:-8px;font-size:.8rem;}
+    .btn-adventure{font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#7c4dff,var(--purple));border:none;color:white;font-size:1.3rem;padding:14px 44px;border-radius:50px;cursor:pointer;box-shadow:0 6px 24px rgba(185,110,255,.4);transition:transform .2s;}
+    .btn-adventure:hover{transform:scale(1.06);}
+    #s-map{padding:0;}
+    .map-header{position:sticky;top:0;z-index:10;width:100%;background:linear-gradient(180deg,rgba(6,7,26,.98),transparent);padding:14px 20px 10px;display:flex;align-items:center;gap:14px;}
+    .map-coins{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--gold);display:flex;align-items:center;gap:5px;}
+    .map-title{font-family:'Fredoka One',cursive;font-size:1.3rem;flex:1;text-align:center;}
+    .map-signs-mini{display:flex;gap:6px;}
+    .sign-mini{width:28px;height:28px;border-radius:8px;background:rgba(100,0,150,.3);border:1.5px solid rgba(185,110,255,.4);display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .3s;}
+    .sign-mini.freed{background:rgba(255,215,0,.2);border-color:var(--gold);}
+    .map-scroll{width:100%;max-width:440px;margin:0 auto;padding:20px 20px 80px;}
+    .world-card{border-radius:24px;padding:18px;margin-bottom:16px;position:relative;overflow:hidden;transition:transform .2s;}
+    .world-card.locked{opacity:.4;filter:grayscale(.7);}
+    .world-card:not(.locked):hover{transform:scale(1.01);}
+    .world-0{background:linear-gradient(135deg,#1565c0,#1e88e5);border:2px solid #42a5f5;}
+    .world-1{background:linear-gradient(135deg,#2e7d32,#43a047);border:2px solid #66bb6a;}
+    .world-2{background:linear-gradient(135deg,#6a1b9a,#8e24aa);border:2px solid #ab47bc;}
+    .world-3{background:linear-gradient(135deg,#e65100,#f57c00);border:2px solid #ffa726;}
+    .world-4{background:linear-gradient(135deg,#880e4f,#c2185b);border:2px solid #f06292;}
+    .world-top{display:flex;align-items:center;gap:14px;}
+    .world-emoji{font-size:2.2rem;line-height:1;}
+    .world-info{flex:1;}
+    .world-name{font-family:'Fredoka One',cursive;font-size:1.2rem;}
+    .world-desc{font-size:.8rem;opacity:.75;margin-top:2px;}
+    .world-progress{font-size:.78rem;opacity:.6;margin-top:3px;}
+    .tier-badge{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:10px;margin-top:4px;display:inline-block;}
+    .tier-1{background:rgba(76,195,247,.15);color:var(--blue);}
+    .tier-2{background:rgba(255,215,0,.15);color:var(--gold);}
+    .tier-3{background:rgba(185,110,255,.15);color:var(--purple);}
+    .lock-icon{font-size:1.8rem;}
+    .levels-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center;}
+    .lvl-dot{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;border:2px solid rgba(255,255,255,.3);transition:transform .15s;cursor:pointer;position:relative;}
+    .lvl-dot.done{background:rgba(76,223,122,.3);border-color:var(--green);}
+    .lvl-dot.done::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+    .lvl-dot.current{background:rgba(255,215,0,.25);border-color:var(--gold);animation:pulse 1.5s infinite;}
+    .lvl-dot.locked{background:rgba(0,0,0,.3);border-color:rgba(255,255,255,.12);cursor:default;opacity:.45;}
+    .lvl-dot.razonado{background:rgba(79,195,247,.12);border-color:var(--blue);}
+    .lvl-dot.razonado.done{background:rgba(79,195,247,.28);}
+    .lvl-dot.boss{background:rgba(185,110,255,.25);border-color:var(--purple);font-size:1rem;}
+    .lvl-dot.boss.done{background:rgba(185,110,255,.4);}
+    .lvl-dot:hover:not(.locked){transform:scale(1.15);}
+    .sign-reward-dot{font-size:.9rem;margin-left:2px;opacity:.7;}
+    .world-complete-banner{background:rgba(76,223,122,.12);border:1px solid var(--green);border-radius:10px;text-align:center;padding:6px 12px;margin-top:10px;font-size:.85rem;color:var(--green);font-weight:700;}
+    #s-question{max-width:500px;width:100%;margin:0 auto;}
+    .tier-strip{width:100%;text-align:center;font-size:.78rem;font-weight:700;padding:4px 0 10px;letter-spacing:.05em;}
+    .ts-1{color:var(--blue);}
+    .ts-2{color:var(--gold);}
+    .ts-3{color:var(--purple);}
+    .q-header{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:.85rem;opacity:.7;}
+    .q-score{background:rgba(255,255,255,.12);padding:5px 14px;border-radius:20px;font-weight:700;}
+    .q-hearts{font-size:1.1rem;letter-spacing:2px;}
+    .progress-wrap{width:100%;height:10px;background:rgba(255,255,255,.15);border-radius:5px;margin-bottom:14px;overflow:hidden;}
+    .progress-fill{height:100%;border-radius:5px;transition:width .4s ease;}
+    .pf-normal{background:linear-gradient(90deg,#4cdf7a,#8bc34a);}
+    .pf-boss{background:linear-gradient(90deg,var(--purple),#f06292);}
+    .q-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:22px;padding:22px;width:100%;text-align:center;animation:slideUp .3s ease;}
+    .q-card.boss-mode{border-color:var(--purple);background:rgba(100,0,150,.2);}
+    .guide-bubble{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border-radius:14px;padding:10px 14px;margin-bottom:14px;text-align:left;}
+    .guide-bubble.villain{background:rgba(100,0,150,.22);border:1px solid var(--purple);}
+    .guide-img-sm{width:50px;height:50px;object-fit:contain;flex-shrink:0;}
+    .guide-msg{font-size:.88rem;line-height:1.4;}
+    .story-bubble{display:none;background:rgba(13,59,110,.35);border:1px solid rgba(79,195,247,.3);border-radius:14px;padding:12px 16px;margin-bottom:12px;font-size:.88rem;line-height:1.55;color:rgba(255,255,255,.88);}
+    .story-bubble.active{display:block;animation:slideUp .3s ease;}
+    .story-label{font-size:.7rem;font-weight:700;color:var(--blue);letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px;}
+    .topic-pill{display:inline-block;padding:3px 14px;border-radius:20px;font-size:.75rem;font-weight:700;margin-bottom:10px;}
+    .tp-normal{background:rgba(255,215,0,.18);color:var(--gold);}
+    .tp-boss{background:rgba(185,110,255,.2);color:var(--purple);}
+    .q-text{font-family:'Fredoka One',cursive;font-size:1.9rem;line-height:1.35;white-space:pre-line;margin:8px 0 18px;}
+    .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .opt-btn{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);color:white;font-family:'Fredoka One',cursive;font-size:1.5rem;padding:18px;border-radius:14px;cursor:pointer;transition:all .15s;}
+    .opt-btn:hover{background:rgba(255,255,255,.22);transform:scale(1.04);}
+    .opt-btn.correct{background:rgba(76,223,122,.35);border-color:var(--green);animation:pulseG .5s;}
+    .opt-btn.wrong{background:rgba(255,79,106,.35);border-color:var(--red);animation:shake .4s;}
+    .overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.7);flex-direction:column;align-items:center;justify-content:center;}
+    .overlay.active{display:flex;}
+    .rescue-box{background:linear-gradient(135deg,#0d1f7a,#1a2f9a);border:3px solid var(--gold);border-radius:28px;padding:30px 24px;text-align:center;max-width:320px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+    .rescue-sign{font-size:5rem;line-height:1;animation:signRescue .6s cubic-bezier(.34,1.56,.64,1) forwards;display:block;margin:10px auto 14px;}
+    .rescue-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--gold);margin-bottom:6px;}
+    .rescue-desc{font-size:.9rem;opacity:.8;line-height:1.45;margin-bottom:16px;}
+    .btn-rescue-ok{font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#ff6b35,var(--gold));border:none;color:#1a0000;font-size:1rem;padding:10px 28px;border-radius:30px;cursor:pointer;transition:transform .2s;}
+    .btn-rescue-ok:hover{transform:scale(1.06);}
+    .tier-up-box{background:linear-gradient(135deg,#0d1f5a,#1a3090);border:3px solid var(--gold);border-radius:28px;padding:28px 24px;text-align:center;max-width:310px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+    .tier-up-sign{font-size:4rem;display:block;margin-bottom:10px;animation:tierUp .6s ease;}
+    .tier-up-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--gold);margin-bottom:8px;}
+    .tier-up-sub{font-size:.88rem;opacity:.85;line-height:1.5;margin-bottom:16px;white-space:pre-line;}
+    .cleto-popup{background:linear-gradient(135deg,#0d1f7a,#1a2f9a);border:3px solid var(--gold);border-radius:28px;padding:26px 22px;text-align:center;max-width:290px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+    .cel-text{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--gold);margin-bottom:5px;}
+    .cel-sub{font-size:.9rem;opacity:.85;}
+    .cel-stars{font-size:1.6rem;margin:8px 0;}
+    .cero-popup{background:linear-gradient(135deg,#1a0030,#3d006a);border:3px solid var(--purple);border-radius:28px;padding:26px 22px;text-align:center;max-width:290px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+    .cero-text{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--purple);margin-bottom:5px;}
+    .cero-sub{font-size:.88rem;opacity:.85;}
+    .btn-accept{font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#7b1fa2,#ab47bc);border:none;color:white;font-size:.95rem;padding:9px 26px;border-radius:30px;cursor:pointer;margin-top:12px;transition:transform .2s;}
+    .btn-accept:hover{transform:scale(1.06);}
+    #s-boss-intro{text-align:center;max-width:420px;}
+    .boss-intro-img{width:150px;height:150px;object-fit:contain;animation:bossIn .6s cubic-bezier(.34,1.56,.64,1) forwards;margin:0 auto 14px;display:block;}
+    .boss-title{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--purple);opacity:.8;margin-bottom:5px;}
+    .boss-name{font-family:'Fredoka One',cursive;font-size:2.4rem;color:var(--purple);text-shadow:0 0 30px rgba(185,110,255,.6);margin-bottom:12px;}
+    .boss-taunt{font-size:.95rem;opacity:.8;line-height:1.5;margin-bottom:22px;background:rgba(100,0,150,.2);border:1px solid rgba(185,110,255,.3);border-radius:16px;padding:14px;}
+    .btn-boss-fight{font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#7b1fa2,var(--purple));border:none;color:white;font-size:1.2rem;padding:13px 38px;border-radius:50px;cursor:pointer;transition:transform .2s;box-shadow:0 6px 24px rgba(185,110,255,.4);}
+    .btn-boss-fight:hover{transform:scale(1.06);}
+    #s-level-done{text-align:center;max-width:380px;}
+    .ld-emoji{font-size:3.5rem;margin-bottom:10px;}
+    .ld-title{font-family:'Fredoka One',cursive;font-size:1.9rem;color:var(--gold);margin-bottom:6px;}
+    .ld-sub{opacity:.75;margin-bottom:18px;font-size:.95rem;}
+    .ld-stars{font-size:2.2rem;letter-spacing:6px;margin:8px 0;}
+    .ld-coins{font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--gold);margin-bottom:6px;}
+    .ld-tier-note{font-size:.8rem;opacity:.65;margin-bottom:20px;min-height:20px;}
+    .btn-continue{font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#ff6b35,var(--gold));border:none;color:#1a0000;font-size:1.1rem;padding:13px 38px;border-radius:50px;cursor:pointer;transition:transform .2s;}
+    .btn-continue:hover{transform:scale(1.06);}
+    #s-boss-win{text-align:center;max-width:400px;}
+    .bw-glow{font-size:2.8rem;margin-bottom:8px;animation:pulse 1s infinite;}
+    .bw-title{font-family:'Fredoka One',cursive;font-size:2.2rem;background:linear-gradient(135deg,var(--gold),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+    .bw-world{font-size:.95rem;opacity:.75;margin-bottom:14px;}
+    .bw-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:18px;margin-bottom:18px;}
+    .bw-stat{display:flex;justify-content:space-between;font-size:.9rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.07);}
+    .bw-stat:last-child{border:none;}
+    .bw-val{font-weight:700;color:var(--gold);}
+    #s-victoria{text-align:center;max-width:480px;}
+    .vic-crown{font-size:4rem;animation:glow 2s infinite;display:block;margin-bottom:10px;}
+    .vic-title{font-family:'Fredoka One',cursive;font-size:2.4rem;background:linear-gradient(135deg,var(--gold),var(--purple),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+    .vic-sub{font-size:1rem;opacity:.8;margin-bottom:24px;line-height:1.55;}
+    .signs-gallery{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:20px 0 28px;}
+    .sign-freed{width:60px;height:60px;border-radius:16px;background:rgba(255,215,0,.15);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.8rem;animation:signRescue .5s ease both;}
+    .vic-stars{font-size:1.8rem;letter-spacing:8px;margin-bottom:18px;}
+    .btn-replay{font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#7c4dff,var(--purple));border:none;color:white;font-size:1.1rem;padding:13px 36px;border-radius:50px;cursor:pointer;transition:transform .2s;}
+    .btn-replay:hover{transform:scale(1.06);}
+    #s-diag-q{max-width:500px;width:100%;margin:0 auto;}
+    .diag-back{background:transparent;border:none;color:rgba(255,255,255,.45);font-size:.88rem;cursor:pointer;margin-bottom:10px;padding:4px;}
+    .diag-back:hover{color:white;}
   </style>
 </head>
 <body>
 <div id="starfield"></div>
-
-<!-- ══ 0. NOMBRE ══ -->
 <div class="screen active" id="s-nombre">
   <div class="nb-logo">🔢 Matemáticas Mágicas</div>
   <div class="nb-sub">¿Cómo se llama el aventurero?</div>
-  <div class="nb-input-wrap">
-    <input class="nb-input" id="nombre-input" type="text" maxlength="18" placeholder="Escribe aquí..." autocomplete="off" oninput="checkNombre()">
-  </div>
+  <input class="nb-input" id="nombre-input" type="text" maxlength="18" placeholder="Escribe aquí..." autocomplete="off" oninput="checkNombre()"><br>
   <div class="nb-hint">Papá o mamá: escribe el nombre de tu hijo 👆</div>
   <br><br>
   <button class="btn-main" id="btn-empezar" onclick="irIntro()" disabled>¡Empezar aventura! 🚀</button>
 </div>
-
-<!-- ══ 1. INTRO / HISTORIA ══ -->
 <div class="screen" id="s-intro">
   <div class="intro-tag">📖 El mundo matemático</div>
   <div class="intro-title">¡Bienvenido al<br>Mundo Matemático!</div>
   <div class="intro-name" id="intro-name">Gera</div>
-  <div class="intro-story">
-    El malvado <strong>Coqui Cero</strong> ha robado todos los signos matemáticos del reino. ¡Sin ellos, nadie puede sumar, restar ni multiplicar! 😱<br><br>
-    Solo <strong id="intro-name2">Gera</strong>, con la ayuda de <strong>Coqui</strong> y <strong>Cleto</strong>, puede recorrer los 5 mundos mágicos y rescatarlos uno por uno. 🦸
-  </div>
+  <div class="intro-story">El malvado <strong>Coqui Cero</strong> ha robado todos los signos matemáticos del reino. ¡Sin ellos, nadie puede sumar, restar ni multiplicar! 😱<br><br>Solo <strong id="intro-name2">Gera</strong>, con la ayuda de <strong>Coqui</strong> y <strong>Cleto</strong>, puede recorrer los 5 mundos mágicos y rescatarlos uno por uno. 🦸</div>
   <div class="intro-signs" id="intro-signs-locked"></div>
   <button class="btn-adventure" id="btn-go-map" onclick="goMap()" style="display:none">¡Comenzar la aventura! ⚔️</button>
   <br>
   <button class="btn-ghost" id="btn-go-diag" onclick="startDiagnostic()" style="margin-top:10px">📋 Hacer diagnóstico (obligatorio)</button>
-  <div id="intro-diag-hint" style="margin-top:12px;font-size:.8rem;color:rgba(255,180,0,.8);background:rgba(255,180,0,.08);border:1px solid rgba(255,180,0,.2);border-radius:10px;padding:8px 14px">
-    👆 Primero haz el diagnóstico para que el juego se ajuste a ti
-  </div>
+  <div id="intro-diag-hint" style="margin-top:12px;font-size:.8rem;color:rgba(255,180,0,.8);background:rgba(255,180,0,.08);border:1px solid rgba(255,180,0,.2);border-radius:10px;padding:8px 14px;">👆 Primero haz el diagnóstico para que el juego se ajuste a ti</div>
 </div>
-
-<!-- ══ 2. MAPA ══ -->
 <div class="screen" id="s-map">
   <div class="map-header">
     <div class="map-coins">🪙 <span id="coin-count">0</span></div>
@@ -233,8 +205,6 @@
   </div>
   <div class="map-scroll" id="map-scroll"></div>
 </div>
-
-<!-- ══ 3. BOSS INTRO ══ -->
 <div class="screen" id="s-boss-intro">
   <img src="CoquiCero.png" alt="Coqui Cero" class="boss-intro-img">
   <div class="boss-title">⚔️ BATALLA FINAL DEL MUNDO</div>
@@ -242,11 +212,10 @@
   <div class="boss-taunt" id="boss-taunt"></div>
   <button class="btn-boss-fight" onclick="startBossBattle()">¡Acepto el reto! 💪</button>
 </div>
-
-<!-- ══ 4. PREGUNTA ══ -->
 <div class="screen" id="s-question">
   <div style="width:100%;max-width:500px;">
     <button class="diag-back" onclick="goMap()">← Mapa</button>
+    <div class="tier-strip ts-1" id="tier-strip">🔵 Explorador</div>
     <div class="q-header">
       <span id="q-counter">1 / 5</span>
       <span class="q-score">⭐ <span id="q-score">0</span></span>
@@ -265,8 +234,6 @@
     </div>
   </div>
 </div>
-
-<!-- ══ 5. SIGNO RESCATADO ══ -->
 <div class="overlay" id="ov-rescue">
   <div class="rescue-box">
     <div style="font-size:.8rem;color:var(--gold);font-weight:700;opacity:.8;margin-bottom:6px;">🔓 ¡SIGNO RESCATADO!</div>
@@ -276,8 +243,14 @@
     <button class="btn-rescue-ok" id="rescue-ok-btn">¡Genial! ✨</button>
   </div>
 </div>
-
-<!-- ══ 6. CLETO ══ -->
+<div class="overlay" id="ov-tier-up">
+  <div class="tier-up-box">
+    <span class="tier-up-sign" id="tier-up-sign">🌟</span>
+    <div class="tier-up-title" id="tier-up-title">¡Subiste de nivel!</div>
+    <div class="tier-up-sub" id="tier-up-sub">¡Las próximas preguntas serán más desafiantes!</div>
+    <button class="btn-rescue-ok" onclick="closeTierUp()">¡Acepto el reto! 🚀</button>
+  </div>
+</div>
 <div class="overlay" id="ov-cleto">
   <div class="cleto-popup">
     <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" width="90" height="90" style="display:block;margin:0 auto 6px">
@@ -301,56 +274,47 @@
       <line x1="126" y1="36" x2="138" y2="20" stroke="#90caf9" stroke-width="2"/>
       <circle cx="139" cy="18" r="4" fill="#ffeb3b"/>
     </svg>
-    <div class="cel-stars" id="ov-cel-stars">⭐ 🌟 ⭐</div>
-    <div class="cel-text" id="ov-cel-text">¡Genial!</div>
-    <div class="cel-sub"  id="ov-cel-sub">¡Lo lograste!</div>
+    <div class="cel-stars">⭐ 🌟 ⭐</div>
+    <div class="cel-text" id="ov-cel-text">¡Increíble!</div>
+    <div class="cel-sub" id="ov-cel-sub">¡Lo lograste!</div>
   </div>
 </div>
-
-<!-- ══ 7. COQUI CERO FALLA ══ -->
 <div class="overlay" id="ov-cero">
   <div class="cero-popup">
     <img src="CoquiCero.png" alt="Coqui Cero" style="width:100px;height:100px;object-fit:contain;display:block;margin:0 auto 8px">
     <div class="cero-text" id="ov-cero-text">😏 ¡Casi!</div>
-    <div class="cero-sub"  id="ov-cero-sub">Sigue intentando...</div>
+    <div class="cero-sub" id="ov-cero-sub">Sigue intentando...</div>
     <button class="btn-accept" id="ov-cero-btn">¡La próxima! 💪</button>
   </div>
 </div>
-
-<!-- ══ 8. NIVEL COMPLETADO ══ -->
 <div class="screen" id="s-level-done">
   <div class="ld-emoji" id="ld-emoji">🎉</div>
   <div class="ld-title" id="ld-title">¡Nivel superado!</div>
-  <div class="ld-sub"   id="ld-sub">¡Bien hecho!</div>
+  <div class="ld-sub" id="ld-sub">¡Bien hecho!</div>
   <div class="ld-stars" id="ld-stars">⭐⭐⭐</div>
   <div class="ld-coins" id="ld-coins">+10 🪙</div>
+  <div class="ld-tier-note" id="ld-tier-note"></div>
   <button class="btn-continue" onclick="afterLevel()">Continuar ➡️</button>
 </div>
-
-<!-- ══ 9. JEFE VENCIDO ══ -->
 <div class="screen" id="s-boss-win">
   <div class="bw-glow">👑</div>
   <div class="bw-title">¡Mundo conquistado!</div>
   <div class="bw-world" id="bw-world">¡Genial!</div>
-  <div class="bw-card"  id="bw-stats"></div>
+  <div class="bw-card" id="bw-stats"></div>
   <button class="btn-continue" onclick="afterBossWin()">¡Siguiente mundo! 🗺️</button>
 </div>
-
-<!-- ══ 10. VICTORIA FINAL ══ -->
 <div class="screen" id="s-victoria">
   <div class="vic-crown">👑</div>
   <div class="vic-title" id="vic-title">¡Lo lograste!</div>
-  <div class="vic-sub"  id="vic-sub">¡Rescataste todos los signos matemáticos del reino!</div>
+  <div class="vic-sub" id="vic-sub">¡Rescataste todos los signos!</div>
   <div class="signs-gallery" id="signs-gallery"></div>
   <div class="vic-stars">⭐⭐⭐⭐⭐</div>
   <div style="font-size:.9rem;opacity:.7;margin-bottom:20px" id="vic-coins"></div>
   <button class="btn-replay" onclick="location.reload()">🔄 Jugar de nuevo</button>
 </div>
-
-<!-- ══ 11. DIAGNÓSTICO ══ -->
 <div class="screen" id="s-diag-q">
   <div style="width:100%;max-width:500px;">
-    <button class="diag-back" onclick="goWelcome()">← Volver</button>
+    <button class="diag-back" onclick="showScreen('s-intro')">← Volver</button>
     <div class="q-header">
       <span id="dq-counter">1 / 15</span>
       <span class="q-score">⭐ <span id="dq-score">0</span></span>
@@ -359,7 +323,7 @@
     <div class="q-card" id="dq-card">
       <div class="guide-bubble">
         <img src="CoquiMat.png" alt="guía" class="guide-img-sm">
-        <div class="guide-msg" id="dq-guide-msg">¡Diagnóstico rápido!</div>
+        <div class="guide-msg" id="dq-guide-msg">¡Vamos a descubrir cuánto sabes!</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
         <div class="topic-pill tp-normal" id="dq-topic">Sumas</div>
@@ -370,803 +334,788 @@
     </div>
   </div>
 </div>
-
 <script>
-// ═══════════════════════════════════════════
-//  SIGNOS — uno por nivel (4 normales + jefe)
-// ═══════════════════════════════════════════
-const WORLD_SIGNS = [
-  // Mundo 1: Sumas y Restas
-  [ {char:'+', name:'el signo +', desc:'¡El signo de la SUMA vuelve al reino! Ahora podemos juntar cosas otra vez. ➕'},
-    {char:'−', name:'el signo −', desc:'¡El signo de la RESTA está libre! Podemos quitar y comparar. ➖'},
-    {char:'=', name:'el signo =', desc:'¡El signo IGUAL regresó! Ahora sabemos cuándo dos cosas son lo mismo. 🟰'},
-    {char:'>', name:'el signo >', desc:'¡El signo MAYOR QUE fue rescatado! Podemos comparar quién es más grande. 📊'},
-    {char:'∞', name:'el símbolo ∞', desc:'¡Coqui Cero nunca podrá robar el infinito! El Mundo 1 es tuyo. 🌟'},
-  ],
-  // Mundo 2: Multiplicación
-  [ {char:'×', name:'el signo ×', desc:'¡El signo de MULTIPLICAR vuelve! Ahora podemos hacer grupos iguales. ✖️'},
-    {char:'÷', name:'el signo ÷', desc:'¡El signo de DIVIDIR está libre! Podemos repartir en partes iguales. ➗'},
-    {char:'²', name:'el símbolo ²', desc:'¡El signo de POTENCIA fue rescatado! Podemos multiplicar un número por sí mismo. 🔢'},
-    {char:'√', name:'el símbolo √', desc:'¡La RAÍZ CUADRADA vuelve al reino! Podemos encontrar el número secreto. 🧮'},
-    {char:'∑', name:'el símbolo ∑', desc:'¡La SUMA TOTAL fue liberada! El Mundo 2 es tuyo, campeón. 🏆'},
-  ],
-  // Mundo 3: Fracciones
-  [ {char:'½', name:'el signo ½', desc:'¡La MITAD vuelve al reino! Ahora podemos dividir cosas en dos partes iguales. 🍕'},
-    {char:'¼', name:'el signo ¼', desc:'¡Un CUARTO fue rescatado! Podemos dividir en cuatro partes iguales. 🎂'},
-    {char:'¾', name:'el signo ¾', desc:'¡Tres cuartos está de vuelta! Las fracciones son tus amigas ahora. 🌟'},
-    {char:'.', name:'el punto decimal', desc:'¡El PUNTO DECIMAL fue liberado! Podemos hablar de partes pequeñas de números. 🔹'},
-    {char:'%', name:'el signo %', desc:'¡El PORCENTAJE vuelve al reino! El Mundo 3 es tuyo. 💯'},
-  ],
-  // Mundo 4: Geometría
-  [ {char:'📐', name:'la escuadra', desc:'¡La ESCUADRA vuelve al reino! Podemos medir ángulos y trazar líneas rectas. 📐'},
-    {char:'P', name:'el perímetro P', desc:'¡El símbolo de PERÍMETRO fue rescatado! Podemos medir alrededor de las figuras. 🔲'},
-    {char:'A', name:'el área A', desc:'¡El símbolo de ÁREA está libre! Podemos saber cuánto espacio ocupa una figura. 🟦'},
-    {char:'°', name:'el símbolo °', desc:'¡El GRADO fue rescatado! Podemos medir ángulos ahora. 🌀'},
-    {char:'π', name:'el símbolo π', desc:'¡El mítico PI vuelve al reino! El Mundo 4 es completamente tuyo. 🥧'},
-  ],
-  // Mundo 5: Álgebra
-  [ {char:'x', name:'la incógnita x', desc:'¡La INCÓGNITA X fue liberada! Podemos buscar números desconocidos. 🔍'},
-    {char:'?', name:'el signo ?', desc:'¡El signo de PREGUNTA vuelve! Podemos plantear problemas y resolverlos. ❓'},
-    {char:'→', name:'la flecha →', desc:'¡La FLECHA fue rescatada! Podemos mostrar patrones y secuencias. ➡️'},
-    {char:'🧠', name:'el cerebro mágico', desc:'¡El CEREBRO MÁGICO está libre! El razonamiento vuelve al reino. 🧠'},
-    {char:'∞²', name:'el infinito al cuadrado', desc:'¡¡¡LO LOGRASTE!!! Coqui Cero ha sido derrotado para siempre. ¡Eres un héroe matemático! 👑'},
-  ],
+const WORLD_SIGNS=[
+  [{char:'+',name:'el signo +',desc:'¡El signo de la SUMA vuelve al reino! ➕'},
+   {char:'−',name:'el signo −',desc:'¡El signo de la RESTA está libre! ➖'},
+   {char:'=',name:'el signo =',desc:'¡El signo IGUAL regresó! 🟰'},
+   {char:'>',name:'el signo >',desc:'¡El signo MAYOR QUE fue rescatado! 📊'},
+   {char:'∞',name:'el símbolo ∞',desc:'¡El Mundo 1 es tuyo, campeón! 🌟'}],
+  [{char:'×',name:'el signo ×',desc:'¡El signo de MULTIPLICAR vuelve! ✖️'},
+   {char:'÷',name:'el signo ÷',desc:'¡El signo de DIVIDIR está libre! ➗'},
+   {char:'²',name:'el símbolo ²',desc:'¡El signo de POTENCIA rescatado! 🔢'},
+   {char:'√',name:'el símbolo √',desc:'¡La RAÍZ CUADRADA libre! 🧮'},
+   {char:'∑',name:'el símbolo ∑',desc:'¡El Mundo 2 conquistado! 🏆'}],
+  [{char:'½',name:'el signo ½',desc:'¡La MITAD vuelve al reino! 🍕'},
+   {char:'¼',name:'el signo ¼',desc:'¡Un CUARTO fue rescatado! 🎂'},
+   {char:'¾',name:'el signo ¾',desc:'¡Tres cuartos está de vuelta! 🌟'},
+   {char:'.',name:'el punto decimal',desc:'¡El PUNTO DECIMAL libre! 🔹'},
+   {char:'%',name:'el signo %',desc:'¡El Mundo 3 es tuyo! 💯'}],
+  [{char:'📐',name:'la escuadra',desc:'¡La ESCUADRA vuelve! 📐'},
+   {char:'P',name:'el perímetro P',desc:'¡El símbolo de PERÍMETRO rescatado! 🔲'},
+   {char:'A',name:'el área A',desc:'¡El símbolo de ÁREA libre! 🟦'},
+   {char:'°',name:'el símbolo °',desc:'¡El GRADO fue rescatado! 🌀'},
+   {char:'π',name:'el símbolo π',desc:'¡El Mundo 4 es completamente tuyo! 🥧'}],
+  [{char:'x',name:'la incógnita x',desc:'¡La INCÓGNITA X fue liberada! 🔍'},
+   {char:'?',name:'el signo ?',desc:'¡El signo de PREGUNTA vuelve! ❓'},
+   {char:'→',name:'la flecha →',desc:'¡La FLECHA fue rescatada! ➡️'},
+   {char:'🧠',name:'el cerebro mágico',desc:'¡El CEREBRO MÁGICO está libre! 🧠'},
+   {char:'∞²',name:'el infinito²',desc:'¡¡¡Derrotaste a Coqui Cero para siempre!!! 👑'}],
 ];
 
-// ═══════════════════════════════════════════
-//  MUNDOS Y PREGUNTAS (ajustadas para 7 años)
-// ═══════════════════════════════════════════
-const WORLDS = [
-  {
-    id:0, name:'Mundo 1: Sumas y Restas', emoji:'➕', desc:'Los primeros pasos del reino',
-    color:'world-0', hearts:3,
-    boss_taunt:'😈 ¿Crees que puedes con mis sumas más difíciles, NOMBRE? ¡Veamos!',
-    levels:[
-      { name:'Sumas básicas', questions:[
-        {t:'Sumas',q:'¿Cuánto es\n3 + 2?',     a:5,  o:[4,5,6,3],    h:'Tres más dos 🔢'},
-        {t:'Sumas',q:'¿Cuánto es\n5 + 4?',     a:9,  o:[8,9,10,7],   h:'Cuenta desde el 5'},
-        {t:'Sumas',q:'¿Cuánto es\n6 + 3?',     a:9,  o:[8,9,10,7],   h:'Seis más tres'},
-        {t:'Sumas',q:'¿Cuánto es\n4 + 4?',     a:8,  o:[7,8,9,6],    h:'Cuatro más cuatro 🎯'},
-        {t:'Sumas',q:'¿Cuánto es\n7 + 2?',     a:9,  o:[8,9,10,11],  h:'Siete más dos'},
-      ]},
-      { name:'Restas básicas', questions:[
-        {t:'Restas',q:'¿Cuánto es\n8 − 3?',    a:5,  o:[4,5,6,3],    h:'Quita 3 del 8 ✂️'},
-        {t:'Restas',q:'¿Cuánto es\n9 − 4?',    a:5,  o:[4,5,6,3],    h:'Nueve menos cuatro'},
-        {t:'Restas',q:'¿Cuánto es\n10 − 5?',   a:5,  o:[4,5,6,3],    h:'La mitad de 10'},
-        {t:'Restas',q:'¿Cuánto es\n7 − 3?',    a:4,  o:[3,4,5,6],    h:'Siete menos tres 🍎'},
-        {t:'Restas',q:'¿Cuánto es\n6 − 2?',    a:4,  o:[3,4,5,2],    h:'Seis menos dos'},
-      ]},
-      { name:'Sumas hasta 20', questions:[
-        {t:'Sumas',q:'¿Cuánto es\n8 + 5?',     a:13, o:[12,13,14,11], h:'Cuenta con los dedos 🤚'},
-        {t:'Sumas',q:'¿Cuánto es\n7 + 6?',     a:13, o:[12,13,14,11], h:'Siete más seis'},
-        {t:'Sumas',q:'¿Cuánto es\n9 + 8?',     a:17, o:[16,17,18,15], h:'Cerca de 10 + 8'},
-        {t:'Sumas',q:'¿Cuánto es\n6 + 7?',     a:13, o:[12,13,14,11], h:'¡Casi lo mismo que 7+6!'},
-        {t:'Sumas',q:'¿Cuánto es\n9 + 9?',     a:18, o:[17,18,19,16], h:'El doble de 9'},
-      ]},
-      { name:'🧠 Problemas razonados', questions:[
-        {t:'Razonamiento', story:'NOMBRE tiene 5 manzanas. Su mamá le da 3 más. ¿Cuántas manzanas tiene ahora?',
-         q:'¿Cuántas manzanas\ntiene ahora?',   a:8,  o:[7,8,9,6],    h:'5 más 3 🍎'},
-        {t:'Razonamiento', story:'Cleto tiene 9 globos. Se le van 4 volando. ¿Cuántos globos le quedan?',
-         q:'¿Cuántos globos\nle quedan?',       a:5,  o:[4,5,6,3],    h:'9 menos 4 🎈'},
-        {t:'Razonamiento', story:'En la clase hay 7 niñas y 6 niños. ¿Cuántos niños hay en total?',
-         q:'¿Cuántos niños\nhay en total?',     a:13, o:[12,13,14,11], h:'Niñas + niños'},
-        {t:'Razonamiento', story:'Coqui tiene 15 dulces y regala 7. ¿Cuántos dulces le quedan a Coqui?',
-         q:'¿Cuántos dulces\nle quedan?',       a:8,  o:[7,8,9,6],    h:'15 menos 7 🍬'},
-        {t:'Razonamiento', story:'NOMBRE juntó 8 estampas el lunes y 9 el martes. ¿Cuántas estampas juntó en total?',
-         q:'¿Cuántas estampas\njuntó en total?',a:17, o:[16,17,18,15], h:'8 más 9'},
-      ]},
-      { name:'⚔️ Jefe: Coqui Cero', isBoss:true, questions:[
-        {t:'JEFE',q:'¿Cuánto es\n10 + 8?',     a:18, o:[17,18,19,16], h:'¡Cerca del 20! 👿'},
-        {t:'JEFE',q:'¿Cuánto es\n15 − 7?',     a:8,  o:[7,8,9,6],    h:'Coqui Cero ríe... 😈'},
-        {t:'JEFE',q:'¿Cuánto es\n12 + 6?',     a:18, o:[17,18,19,16], h:'¡Concentración! 🔥'},
-        {t:'JEFE',q:'¿Cuánto es\n20 − 8?',     a:12, o:[11,12,13,10], h:'¡Ya casi! 💪'},
-        {t:'JEFE',q:'¿Cuánto es\n9 + 9?',      a:18, o:[17,18,19,20], h:'¡El golpe final! 🏆'},
-      ]},
-    ]
-  },
-  {
-    id:1, name:'Mundo 2: Multiplicación', emoji:'✖️', desc:'Grupos iguales con Cleto',
-    color:'world-1', hearts:3,
-    boss_taunt:'🌙 La tabla del 5 es fácil... ¿pero la del 4? ¡A ver, NOMBRE!',
-    levels:[
-      { name:'Grupos iguales', questions:[
-        {t:'Grupos',q:'¿Cuánto es\n2 grupos de 3?', a:6,  o:[5,6,7,4],    h:'2×3: dos grupos de tres 🔢'},
-        {t:'Grupos',q:'¿Cuánto es\n3 grupos de 2?', a:6,  o:[5,6,7,4],    h:'3×2: tres grupos de dos'},
-        {t:'Grupos',q:'¿Cuánto es\n2 grupos de 4?', a:8,  o:[6,8,10,4],   h:'2×4 🎯'},
-        {t:'Grupos',q:'¿Cuánto es\n3 grupos de 3?', a:9,  o:[6,9,12,8],   h:'3×3: tres grupos de tres'},
-        {t:'Grupos',q:'¿Cuánto es\n4 grupos de 2?', a:8,  o:[6,8,10,4],   h:'4×2: cuatro grupos de dos'},
-      ]},
-      { name:'Tabla del 2 y del 5', questions:[
-        {t:'Tabla ×2',q:'¿Cuánto es\n2 × 5?',  a:10, o:[8,10,12,6],   h:'La tabla del 2 🔢'},
-        {t:'Tabla ×2',q:'¿Cuánto es\n2 × 7?',  a:14, o:[12,14,16,10], h:'Dos por siete'},
-        {t:'Tabla ×5',q:'¿Cuánto es\n5 × 3?',  a:15, o:[10,15,20,12], h:'La tabla del 5 siempre termina en 0 o 5'},
-        {t:'Tabla ×5',q:'¿Cuánto es\n5 × 4?',  a:20, o:[15,20,25,10], h:'¡Cinco por cuatro!'},
-        {t:'Tabla ×5',q:'¿Cuánto es\n5 × 6?',  a:30, o:[25,30,35,20], h:'¡Cinco por seis!'},
-      ]},
-      { name:'Tabla del 3 y del 4', questions:[
-        {t:'Tabla ×3',q:'¿Cuánto es\n3 × 4?',  a:12, o:[9,12,15,8],   h:'Tres por cuatro 🧩'},
-        {t:'Tabla ×3',q:'¿Cuánto es\n3 × 5?',  a:15, o:[12,15,18,9],  h:'Tres por cinco'},
-        {t:'Tabla ×4',q:'¿Cuánto es\n4 × 3?',  a:12, o:[8,12,16,10],  h:'Cuatro por tres'},
-        {t:'Tabla ×4',q:'¿Cuánto es\n4 × 4?',  a:16, o:[12,16,20,8],  h:'¡Cuatro por cuatro!'},
-        {t:'Tabla ×4',q:'¿Cuánto es\n4 × 5?',  a:20, o:[16,20,24,12], h:'Cuatro por cinco'},
-      ]},
-      { name:'🧠 Problemas razonados', questions:[
-        {t:'Razonamiento', story:'Coqui tiene 3 cajas con 4 galletas cada una. ¿Cuántas galletas tiene en total?',
-         q:'¿Cuántas galletas\ntiene en total?', a:12, o:[10,12,14,8],  h:'3 cajas × 4 galletas 🍪'},
-        {t:'Razonamiento', story:'NOMBRE quiere poner 2 flores en cada mesa. Hay 5 mesas. ¿Cuántas flores necesita?',
-         q:'¿Cuántas flores\nnecesita?',         a:10, o:[7,10,12,8],   h:'5 mesas × 2 flores 🌸'},
-        {t:'Razonamiento', story:'Cleto tiene 4 bolsas con 3 canicas cada una. ¿Cuántas canicas tiene Cleto?',
-         q:'¿Cuántas canicas\ntiene Cleto?',     a:12, o:[10,12,14,9],  h:'4 bolsas × 3 canicas 🎱'},
-        {t:'Razonamiento', story:'Hay 5 niños y cada uno tiene 2 lápices. ¿Cuántos lápices hay en total?',
-         q:'¿Cuántos lápices\nhay en total?',    a:10, o:[7,10,12,8],   h:'5 niños × 2 lápices ✏️'},
-        {t:'Razonamiento', story:'En la tienda de Coqui hay 3 estantes con 5 juguetes cada uno. ¿Cuántos juguetes hay?',
-         q:'¿Cuántos juguetes\nhay en total?',   a:15, o:[12,15,18,10], h:'3 estantes × 5 juguetes 🧸'},
-      ]},
-      { name:'⚔️ Jefe: Coqui Cero', isBoss:true, questions:[
-        {t:'JEFE',q:'¿Cuánto es\n5 × 5?',   a:25, o:[20,25,30,15], h:'😈 ¡Cinco por cinco!'},
-        {t:'JEFE',q:'¿Cuánto es\n3 × 6?',   a:18, o:[15,18,21,12], h:'¡Tres por seis! 🧠'},
-        {t:'JEFE',q:'¿Cuánto es\n4 × 6?',   a:24, o:[20,24,28,16], h:'¡Concentración! 🔥'},
-        {t:'JEFE',q:'¿Cuánto es\n2 × 9?',   a:18, o:[16,18,20,14], h:'Coqui Cero tiembla... 💪'},
-        {t:'JEFE',q:'¿Cuánto es\n5 × 7?',   a:35, o:[30,35,40,25], h:'¡El golpe final! 🏆'},
-      ]},
-    ]
-  },
-  {
-    id:2, name:'Mundo 3: Fracciones', emoji:'🍕', desc:'Cortando el pastel con Coqui',
-    color:'world-2', hearts:3,
-    boss_taunt:'😏 ¿Sabes cuánto es la mitad de 18, NOMBRE? ¡Demuéstralo!',
-    levels:[
-      { name:'La mitad', questions:[
-        {t:'Mitad',q:'¿Cuánto es la\nmitad de 6?',  a:3,  o:[2,3,4,1],    h:'6 entre 2 ✂️'},
-        {t:'Mitad',q:'¿Cuánto es la\nmitad de 8?',  a:4,  o:[3,4,5,2],    h:'8 entre 2'},
-        {t:'Mitad',q:'¿Cuánto es la\nmitad de 10?', a:5,  o:[4,5,6,3],    h:'10 entre 2'},
-        {t:'Mitad',q:'¿Cuánto es la\nmitad de 12?', a:6,  o:[5,6,7,4],    h:'12 entre 2 🍕'},
-        {t:'Mitad',q:'¿Cuánto es la\nmitad de 20?', a:10, o:[8,10,12,5],  h:'20 entre 2'},
-      ]},
-      { name:'Mitad y cuarto', questions:[
-        {t:'Fracciones',q:'¿Cuál es más\ngrande?\n½ o ¼',         a:'½', o:['½','¼','son iguales','¾'], h:'¿Cuánto del pastel? 🎂'},
-        {t:'Fracciones',q:'¿Cuánto es\n¼ de 8?',                  a:2,   o:[1,2,4,8],   h:'8 entre 4'},
-        {t:'Fracciones',q:'¿Cuánto es\n¼ de 12?',                 a:3,   o:[2,3,4,6],   h:'12 entre 4'},
-        {t:'Fracciones',q:'Una pizza tiene\n4 rebanadas iguales.\n¿Qué fracción es\ncada rebanada?', a:'¼', o:['½','¼','⅓','⅛'], h:'4 partes iguales 🍕'},
-        {t:'Fracciones',q:'¿Cuánto es\n½ + ½?',                   a:1,   o:['½',1,'1½',2], h:'Dos mitades hacen uno'},
-      ]},
-      { name:'Fracciones de números', questions:[
-        {t:'Fracciones',q:'¿Cuánto es\n½ de 14?',  a:7,  o:[6,7,8,5],    h:'14 entre 2'},
-        {t:'Fracciones',q:'¿Cuánto es\n½ de 18?',  a:9,  o:[8,9,10,6],   h:'18 entre 2'},
-        {t:'Fracciones',q:'¿Cuánto es\n¼ de 16?',  a:4,  o:[3,4,5,8],    h:'16 entre 4'},
-        {t:'Fracciones',q:'¿Cuánto es\n¼ de 20?',  a:5,  o:[4,5,6,10],   h:'20 entre 4'},
-        {t:'Fracciones',q:'¿Cuánto es\n½ de 16?',  a:8,  o:[7,8,9,4],    h:'16 entre 2'},
-      ]},
-      { name:'🧠 Problemas razonados', questions:[
-        {t:'Razonamiento', story:'Coqui tiene una pizza con 8 rebanadas. Se come la mitad. ¿Cuántas rebanadas se comió?',
-         q:'¿Cuántas rebanadas\nse comió?',       a:4,  o:[3,4,5,2],    h:'La mitad de 8 🍕'},
-        {t:'Razonamiento', story:'NOMBRE tiene 12 caramelos y quiere dar ¼ a su amigo. ¿Cuántos caramelos le da?',
-         q:'¿Cuántos caramelos\nle da?',           a:3,  o:[2,3,4,6],    h:'¼ de 12 🍬'},
-        {t:'Razonamiento', story:'Cleto tiene una barra de chocolate con 10 pedazos. Come la mitad. ¿Cuántos quedan?',
-         q:'¿Cuántos pedazos\nquedan?',            a:5,  o:[4,5,6,3],    h:'La mitad de 10 🍫'},
-        {t:'Razonamiento', story:'Hay 16 globos en la fiesta. La mitad son rojos. ¿Cuántos globos rojos hay?',
-         q:'¿Cuántos globos\nrojos hay?',          a:8,  o:[6,8,10,4],   h:'La mitad de 16 🎈'},
-        {t:'Razonamiento', story:'Coqui Cero tiene 20 monedas. NOMBRE le gana ¼ de ellas. ¿Cuántas monedas gana NOMBRE?',
-         q:'¿Cuántas monedas\ngana?',              a:5,  o:[4,5,6,10],   h:'¼ de 20 🪙'},
-      ]},
-      { name:'⚔️ Jefe: Coqui Cero', isBoss:true, questions:[
-        {t:'JEFE',q:'¿Cuánto es la\nmitad de 18?', a:9,  o:[8,9,10,6],   h:'😈 ¡18 entre 2!'},
-        {t:'JEFE',q:'¿Cuánto es\n¼ de 24?',        a:6,  o:[4,6,8,12],   h:'24 entre 4 🧠'},
-        {t:'JEFE',q:'¿Cuánto es la\nmitad de 30?', a:15, o:[12,15,18,10], h:'¡Concentración! 🔥'},
-        {t:'JEFE',q:'¿Cuál es más\ngrande?\n¾ o ½',a:'¾',o:['½','¾','son iguales','¼'], h:'Coqui Cero tiembla... 💪'},
-        {t:'JEFE',q:'¿Cuánto es\n¼ + ¼?',          a:'½',o:['¼','½','¾',1], h:'¡El golpe final! 🏆'},
-      ]},
-    ]
-  },
-  {
-    id:3, name:'Mundo 4: Formas y Medidas', emoji:'📐', desc:'Figuras mágicas con Cleto',
-    color:'world-3', hearts:3,
-    boss_taunt:'🌙 ¿Cuántos lados tiene un hexágono, NOMBRE? ¡A ver si lo sabes!',
-    levels:[
-      { name:'Figuras básicas', questions:[
-        {t:'Figuras',q:'¿Cuántos lados\ntiene un triángulo?', a:3,  o:[2,3,4,5],   h:'Tri = 3 📐'},
-        {t:'Figuras',q:'¿Cuántos lados\ntiene un cuadrado?',  a:4,  o:[3,4,5,6],   h:'Cuadrado = 4 lados iguales'},
-        {t:'Figuras',q:'¿Cuántos lados\ntiene un rectángulo?',a:4,  o:[3,4,5,6],   h:'Como el cuadrado, pero diferente'},
-        {t:'Figuras',q:'¿Cuántos lados\ntiene un pentágono?', a:5,  o:[4,5,6,7],   h:'Penta = 5 ⭐'},
-        {t:'Figuras',q:'¿Cuántos lados\ntiene un hexágono?',  a:6,  o:[5,6,7,8],   h:'Hexa = 6 🔷'},
-      ]},
-      { name:'Medir el contorno', questions:[
-        {t:'Perímetro',q:'Cuadrado de lado 3.\n¿Cuánto mide\nsu contorno?',   a:12, o:[9,12,15,6],   h:'4 lados × 3 📏'},
-        {t:'Perímetro',q:'Triángulo con lados\n3, 3 y 3.\n¿Cuánto mide\nsu contorno?', a:9, o:[6,9,12,3], h:'Suma los 3 lados'},
-        {t:'Perímetro',q:'Rectángulo de\n4 × 2.\n¿Cuánto mide\nsu contorno?', a:12, o:[8,12,16,6],   h:'2×4 + 2×2'},
-        {t:'Perímetro',q:'Cuadrado de lado 5.\n¿Cuánto mide\nsu contorno?',   a:20, o:[15,20,25,10],  h:'4 lados × 5'},
-        {t:'Perímetro',q:'Triángulo con lados\n2, 3 y 4.\n¿Cuánto mide\nsu contorno?', a:9, o:[7,9,11,8], h:'2+3+4'},
-      ]},
-      { name:'Medir el espacio', questions:[
-        {t:'Área',q:'Cuadrado de lado 2.\n¿Cuánto espacio ocupa?', a:4, o:[2,4,8,6],    h:'2 × 2 = ?'},
-        {t:'Área',q:'Cuadrado de lado 3.\n¿Cuánto espacio ocupa?', a:9, o:[6,9,12,3],   h:'3 × 3 = ?'},
-        {t:'Área',q:'Rectángulo de 4 × 2.\n¿Cuánto espacio ocupa?',a:8, o:[6,8,10,12],  h:'4 × 2 = ?'},
-        {t:'Área',q:'Rectángulo de 5 × 3.\n¿Cuánto espacio ocupa?',a:15,o:[10,15,20,8], h:'5 × 3 = ?'},
-        {t:'Área',q:'Cuadrado de lado 4.\n¿Cuánto espacio ocupa?', a:16,o:[12,16,20,8], h:'4 × 4 = ?'},
-      ]},
-      { name:'🧠 Problemas razonados', questions:[
-        {t:'Razonamiento', story:'NOMBRE quiere poner una cinta alrededor de un cuadro cuadrado de lado 6 cm. ¿Cuánta cinta necesita?',
-         q:'¿Cuánta cinta\nnecesita?',            a:24, o:[18,24,30,12], h:'4 lados × 6 cm 🖼️'},
-        {t:'Razonamiento', story:'Cleto dibuja un triángulo cuyos tres lados miden 5 cm cada uno. ¿Cuánto mide el contorno?',
-         q:'¿Cuánto mide\nel contorno?',           a:15, o:[10,15,20,5],  h:'3 lados × 5 cm 📐'},
-        {t:'Razonamiento', story:'La habitación de Gera mide 4 metros de largo y 3 metros de ancho. ¿Cuántos metros cuadrados tiene?',
-         q:'¿Cuántos metros\ncuadrados tiene?',    a:12, o:[7,12,14,10],  h:'4 × 3 🏠'},
-        {t:'Razonamiento', story:'Coqui tiene un jardín cuadrado de lado 5 metros. ¿Cuántos metros cuadrados tiene el jardín?',
-         q:'¿Cuántos metros\ncuadrados tiene?',    a:25, o:[20,25,30,10], h:'5 × 5 🌿'},
-        {t:'Razonamiento', story:'Coqui Cero tiene una caja rectangular de 6 × 4. ¿Cuánto espacio ocupa la tapa de la caja?',
-         q:'¿Cuánto espacio\nocupa la tapa?',      a:24, o:[20,24,28,10], h:'6 × 4 📦'},
-      ]},
-      { name:'⚔️ Jefe: Coqui Cero', isBoss:true, questions:[
-        {t:'JEFE',q:'¿Cuántos lados\ntiene un octágono?',   a:8, o:[6,8,10,7],   h:'😈 Octa = 8'},
-        {t:'JEFE',q:'Cuadrado de lado 6.\n¿Cuánto mide\nsu contorno?',  a:24,o:[18,24,30,12], h:'4 × 6 🧠'},
-        {t:'JEFE',q:'Rectángulo de 5 × 4.\n¿Cuánto espacio ocupa?', a:20,o:[18,20,22,9], h:'5 × 4 🔥'},
-        {t:'JEFE',q:'Triángulo con lados\n4, 5 y 6.\n¿Cuánto mide\nel contorno?', a:15,o:[14,15,16,12], h:'4+5+6 💪'},
-        {t:'JEFE',q:'Cuadrado de lado 7.\n¿Cuánto espacio ocupa?', a:49,o:[42,49,56,14], h:'7 × 7 🏆'},
-      ]},
-    ]
-  },
-  {
-    id:4, name:'Mundo 5: Patrones y Lógica', emoji:'🔭', desc:'Descubriendo secretos numéricos',
-    color:'world-4', hearts:3,
-    boss_taunt:'😈 ¡Este es mi mundo favorito, NOMBRE! Los patrones me pertenecen... ¡o eso cree!',
-    levels:[
-      { name:'Patrones simples', questions:[
-        {t:'Patrones',q:'¿Qué sigue?\n2, 4, 6, 8, __',   a:10, o:[9,10,11,12], h:'Suma 2 cada vez 🔢'},
-        {t:'Patrones',q:'¿Qué sigue?\n5, 10, 15, 20, __',a:25, o:[22,25,30,20], h:'Suma 5 cada vez'},
-        {t:'Patrones',q:'¿Qué sigue?\n1, 3, 5, 7, __',   a:9,  o:[8,9,10,11],  h:'Números impares'},
-        {t:'Patrones',q:'¿Qué sigue?\n10, 8, 6, 4, __',  a:2,  o:[1,2,3,0],    h:'Resta 2 cada vez'},
-        {t:'Patrones',q:'¿Qué sigue?\n3, 6, 9, 12, __',  a:15, o:[13,15,18,14], h:'Suma 3 cada vez (tabla del 3)'},
-      ]},
-      { name:'El número desconocido', questions:[
-        {t:'Incógnita',q:'__ + 3 = 7\n¿Qué va en __?',  a:4, o:[3,4,5,10],  h:'7 menos 3 = ? 🔍'},
-        {t:'Incógnita',q:'5 + __ = 9\n¿Qué va en __?',  a:4, o:[3,4,5,14],  h:'9 menos 5 = ?'},
-        {t:'Incógnita',q:'__ − 2 = 6\n¿Qué va en __?',  a:8, o:[4,6,8,12],  h:'6 más 2 = ?'},
-        {t:'Incógnita',q:'10 − __ = 4\n¿Qué va en __?', a:6, o:[4,6,8,14],  h:'10 menos ? es 4'},
-        {t:'Incógnita',q:'3 × __ = 12\n¿Qué va en __?', a:4, o:[3,4,5,6],   h:'¿Cuántos grupos de 3 dan 12?'},
-      ]},
-      { name:'Patrones con figuras', questions:[
-        {t:'Patrones',q:'¿Qué sigue?\n2, 4, 8, 16, __',  a:32, o:[24,30,32,18], h:'¡Se multiplica por 2! 🚀'},
-        {t:'Patrones',q:'¿Qué sigue?\n1, 2, 4, 8, __',   a:16, o:[12,16,10,20], h:'Cada número es el doble'},
-        {t:'Patrones',q:'¿Qué sigue?\n20, 15, 10, 5, __',a:0,  o:[0,2,4,1],    h:'Resta 5 cada vez'},
-        {t:'Patrones',q:'¿Qué sigue?\n1, 4, 9, 16, __',  a:25, o:[20,25,30,24], h:'1×1, 2×2, 3×3, 4×4, ??'},
-        {t:'Patrones',q:'¿Qué sigue?\n100, 90, 80, 70, __',a:60,o:[50,60,65,55],'h':'Resta 10 cada vez'},
-      ]},
-      { name:'🧠 Problemas razonados', questions:[
-        {t:'Razonamiento', story:'NOMBRE tiene 3 bolsas. En cada bolsa hay 4 canicas. ¿Cuántas canicas tiene en total?',
-         q:'¿Cuántas canicas\nhay en total?',      a:12, o:[10,12,14,7],  h:'3 × 4 🎱'},
-        {t:'Razonamiento', story:'Coqui reparte 15 naranjas en grupos de 3. ¿Cuántos grupos puede hacer?',
-         q:'¿Cuántos grupos\npuede hacer?',         a:5,  o:[3,5,6,4],    h:'15 entre 3 🍊'},
-        {t:'Razonamiento', story:'Cleto tiene el doble de puntos que NOMBRE. NOMBRE tiene 8 puntos. ¿Cuántos tiene Cleto?',
-         q:'¿Cuántos puntos\ntiene Cleto?',         a:16, o:[10,12,16,18], h:'El doble de 8 🎮'},
-        {t:'Razonamiento', story:'Los números siguen el patrón 4, 8, 12, 16... ¿Cuál será el siguiente número?',
-         q:'¿Cuál es el\nsiguiente número?',        a:20, o:[18,20,22,24], h:'Suma 4 cada vez 🔢'},
-        {t:'Razonamiento', story:'NOMBRE quiere llegar a 30 saltando de 5 en 5 desde el 0. ¿Cuántos saltos necesita dar?',
-         q:'¿Cuántos saltos\nnecesita dar?',        a:6,  o:[5,6,7,8],    h:'30 entre 5 🦘'},
-      ]},
-      { name:'⚔️ Jefe Final: Coqui Cero', isBoss:true, questions:[
-        {t:'JEFE FINAL',q:'¿Qué sigue?\n3, 6, 12, 24, __',  a:48, o:[30,36,48,40], h:'😈 Se multiplica por 2'},
-        {t:'JEFE FINAL',q:'__ + 9 = 17\n¿Qué va en __?',     a:8,  o:[6,8,10,26],  h:'17 menos 9 🧠'},
-        {t:'JEFE FINAL',q:'4 × __ = 20\n¿Qué va en __?',     a:5,  o:[4,5,6,8],    h:'¿Cuántos 4 caben en 20? 🔥'},
-        {t:'JEFE FINAL',q:'¿Qué sigue?\n2, 5, 8, 11, __',    a:14, o:[12,13,14,15], h:'Suma 3 cada vez 💪'},
-        {t:'JEFE FINAL',q:'El doble de 9\nmás 3 es...',       a:21, o:[18,21,24,15], h:'Primero el doble, luego +3 🏆'},
-      ]},
-    ]
-  },
+const WORLDS=[
+ {id:0,name:'Mundo 1: Sumas y Restas',emoji:'➕',desc:'Los primeros pasos del reino',color:'world-0',hearts:3,
+  boss_taunt:'😈 ¿Crees que puedes con mis sumas, NOMBRE? ¡Veamos!',diagTopics:['Sumas','Restas'],
+  levels:[
+   {name:'Sumas',tiers:{
+    1:[{t:'Sumas',q:'¿Cuánto es\n2 + 3?',a:5,o:[4,5,6,3],h:'Dos más tres 🔢'},
+       {t:'Sumas',q:'¿Cuánto es\n4 + 2?',a:6,o:[5,6,7,4],h:'Cuatro más dos'},
+       {t:'Sumas',q:'¿Cuánto es\n3 + 3?',a:6,o:[5,6,7,4],h:'Tres más tres'},
+       {t:'Sumas',q:'¿Cuánto es\n5 + 1?',a:6,o:[5,6,7,4],h:'Cinco más uno'},
+       {t:'Sumas',q:'¿Cuánto es\n4 + 3?',a:7,o:[6,7,8,5],h:'Cuatro más tres 🎯'}],
+    2:[{t:'Sumas',q:'¿Cuánto es\n5 + 4?',a:9,o:[8,9,10,7],h:'Cuenta desde el 5'},
+       {t:'Sumas',q:'¿Cuánto es\n6 + 3?',a:9,o:[8,9,10,7],h:'Seis más tres'},
+       {t:'Sumas',q:'¿Cuánto es\n7 + 4?',a:11,o:[10,11,12,9],h:'Siete más cuatro'},
+       {t:'Sumas',q:'¿Cuánto es\n8 + 3?',a:11,o:[10,11,12,9],h:'Ocho más tres'},
+       {t:'Sumas',q:'¿Cuánto es\n6 + 6?',a:12,o:[11,12,13,10],h:'Doble de seis'}],
+    3:[{t:'Sumas',q:'¿Cuánto es\n8 + 5?',a:13,o:[12,13,14,11],h:'¡Cuenta con los dedos! 🤚'},
+       {t:'Sumas',q:'¿Cuánto es\n7 + 6?',a:13,o:[12,13,14,11],h:'Siete más seis'},
+       {t:'Sumas',q:'¿Cuánto es\n9 + 8?',a:17,o:[16,17,18,15],h:'Cerca de 10+8'},
+       {t:'Sumas',q:'¿Cuánto es\n8 + 8?',a:16,o:[15,16,17,14],h:'El doble de 8'},
+       {t:'Sumas',q:'¿Cuánto es\n9 + 9?',a:18,o:[17,18,19,16],h:'El doble de 9'}]}},
+   {name:'Restas',tiers:{
+    1:[{t:'Restas',q:'¿Cuánto es\n5 − 2?',a:3,o:[2,3,4,1],h:'Quita 2 del 5 ✂️'},
+       {t:'Restas',q:'¿Cuánto es\n6 − 3?',a:3,o:[2,3,4,1],h:'Seis menos tres'},
+       {t:'Restas',q:'¿Cuánto es\n7 − 4?',a:3,o:[2,3,4,5],h:'Siete menos cuatro'},
+       {t:'Restas',q:'¿Cuánto es\n8 − 5?',a:3,o:[2,3,4,5],h:'Ocho menos cinco'},
+       {t:'Restas',q:'¿Cuánto es\n9 − 6?',a:3,o:[2,3,4,5],h:'Nueve menos seis'}],
+    2:[{t:'Restas',q:'¿Cuánto es\n8 − 3?',a:5,o:[4,5,6,3],h:'Quita 3 del 8 ✂️'},
+       {t:'Restas',q:'¿Cuánto es\n9 − 4?',a:5,o:[4,5,6,3],h:'Nueve menos cuatro'},
+       {t:'Restas',q:'¿Cuánto es\n10 − 5?',a:5,o:[4,5,6,3],h:'La mitad de 10'},
+       {t:'Restas',q:'¿Cuánto es\n11 − 4?',a:7,o:[6,7,8,5],h:'Once menos cuatro'},
+       {t:'Restas',q:'¿Cuánto es\n12 − 5?',a:7,o:[6,7,8,5],h:'Doce menos cinco'}],
+    3:[{t:'Restas',q:'¿Cuánto es\n15 − 7?',a:8,o:[7,8,9,6],h:'¡Paso a paso! 🧩'},
+       {t:'Restas',q:'¿Cuánto es\n14 − 6?',a:8,o:[7,8,9,6],h:'Catorce menos seis'},
+       {t:'Restas',q:'¿Cuánto es\n16 − 8?',a:8,o:[7,8,9,6],h:'El doble de 8'},
+       {t:'Restas',q:'¿Cuánto es\n20 − 9?',a:11,o:[10,11,12,9],h:'Veinte menos nueve'},
+       {t:'Restas',q:'¿Cuánto es\n18 − 9?',a:9,o:[8,9,10,7],h:'El doble de 9'}]}},
+   {name:'Sumas y restas mixtas',tiers:{
+    1:[{t:'Sumas',q:'¿Cuánto es\n3 + 4?',a:7,o:[6,7,8,5],h:'Tres más cuatro'},
+       {t:'Sumas',q:'¿Cuánto es\n2 + 6?',a:8,o:[7,8,9,6],h:'Dos más seis'},
+       {t:'Restas',q:'¿Cuánto es\n7 − 3?',a:4,o:[3,4,5,6],h:'Siete menos tres'},
+       {t:'Restas',q:'¿Cuánto es\n6 − 2?',a:4,o:[3,4,5,2],h:'Seis menos dos'},
+       {t:'Sumas',q:'¿Cuánto es\n5 + 3?',a:8,o:[7,8,9,6],h:'Cinco más tres'}],
+    2:[{t:'Sumas',q:'¿Cuánto es\n6 + 5?',a:11,o:[10,11,12,9],h:'Seis más cinco'},
+       {t:'Restas',q:'¿Cuánto es\n10 − 4?',a:6,o:[5,6,7,4],h:'Diez menos cuatro'},
+       {t:'Sumas',q:'¿Cuánto es\n8 + 4?',a:12,o:[11,12,13,10],h:'Ocho más cuatro'},
+       {t:'Restas',q:'¿Cuánto es\n13 − 5?',a:8,o:[7,8,9,6],h:'Trece menos cinco'},
+       {t:'Sumas',q:'¿Cuánto es\n7 + 5?',a:12,o:[11,12,13,10],h:'Siete más cinco'}],
+    3:[{t:'Sumas',q:'¿Cuánto es\n10 + 8?',a:18,o:[17,18,19,16],h:'¡Cerca del 20!'},
+       {t:'Restas',q:'¿Cuánto es\n17 − 8?',a:9,o:[8,9,10,7],h:'Diecisiete menos ocho'},
+       {t:'Sumas',q:'¿Cuánto es\n12 + 7?',a:19,o:[18,19,20,17],h:'Doce más siete'},
+       {t:'Restas',q:'¿Cuánto es\n20 − 8?',a:12,o:[11,12,13,10],h:'Veinte menos ocho'},
+       {t:'Sumas',q:'¿Cuánto es\n11 + 9?',a:20,o:[19,20,21,18],h:'El gran 20'}]}},
+   {name:'🧠 Problemas razonados',tiers:{
+    1:[{t:'Razonamiento',story:'NOMBRE tiene 3 manzanas. Su mamá le da 2 más. ¿Cuántas tiene ahora?',q:'¿Cuántas manzanas\ntiene ahora?',a:5,o:[4,5,6,3],h:'3 más 2 🍎'},
+       {t:'Razonamiento',story:'Cleto tiene 6 globos. Se le van 2 volando. ¿Cuántos le quedan?',q:'¿Cuántos globos\nle quedan?',a:4,o:[3,4,5,2],h:'6 menos 2 🎈'},
+       {t:'Razonamiento',story:'En la clase hay 4 niñas y 3 niños. ¿Cuántos hay en total?',q:'¿Cuántos hay\nen total?',a:7,o:[6,7,8,5],h:'4 más 3'},
+       {t:'Razonamiento',story:'Coqui tiene 8 dulces y come 3. ¿Cuántos le quedan?',q:'¿Cuántos dulces\nle quedan?',a:5,o:[4,5,6,3],h:'8 menos 3 🍬'},
+       {t:'Razonamiento',story:'NOMBRE juntó 4 estampas el lunes y 3 el martes. ¿Cuántas en total?',q:'¿Cuántas estampas\nen total?',a:7,o:[6,7,8,5],h:'4 más 3'}],
+    2:[{t:'Razonamiento',story:'NOMBRE tiene 5 manzanas. Su mamá le da 4 más. ¿Cuántas tiene ahora?',q:'¿Cuántas manzanas\ntiene ahora?',a:9,o:[8,9,10,7],h:'5 más 4 🍎'},
+       {t:'Razonamiento',story:'Cleto tiene 10 globos. Se le van 4 volando. ¿Cuántos le quedan?',q:'¿Cuántos globos\nle quedan?',a:6,o:[5,6,7,4],h:'10 menos 4 🎈'},
+       {t:'Razonamiento',story:'En la clase hay 6 niñas y 5 niños. ¿Cuántos hay en total?',q:'¿Cuántos hay\nen total?',a:11,o:[10,11,12,9],h:'6 más 5'},
+       {t:'Razonamiento',story:'Coqui tiene 12 dulces y regala 5. ¿Cuántos le quedan?',q:'¿Cuántos dulces\nle quedan?',a:7,o:[6,7,8,5],h:'12 menos 5 🍬'},
+       {t:'Razonamiento',story:'NOMBRE juntó 7 estampas el lunes y 6 el martes. ¿Cuántas en total?',q:'¿Cuántas estampas\nen total?',a:13,o:[12,13,14,11],h:'7 más 6'}],
+    3:[{t:'Razonamiento',story:'NOMBRE tiene 8 manzanas. Su mamá le da 9 más. ¿Cuántas tiene ahora?',q:'¿Cuántas manzanas\ntiene ahora?',a:17,o:[16,17,18,15],h:'8 más 9 🍎'},
+       {t:'Razonamiento',story:'Cleto tiene 15 globos. Se le van 7 volando. ¿Cuántos le quedan?',q:'¿Cuántos globos\nle quedan?',a:8,o:[7,8,9,6],h:'15 menos 7 🎈'},
+       {t:'Razonamiento',story:'En la clase hay 9 niñas y 8 niños. ¿Cuántos hay en total?',q:'¿Cuántos hay\nen total?',a:17,o:[16,17,18,15],h:'9 más 8'},
+       {t:'Razonamiento',story:'Coqui tiene 18 dulces y regala 9. ¿Cuántos le quedan?',q:'¿Cuántos dulces\nle quedan?',a:9,o:[8,9,10,7],h:'18 menos 9 🍬'},
+       {t:'Razonamiento',story:'NOMBRE juntó 9 estampas el lunes y 8 el martes. ¿Cuántas en total?',q:'¿Cuántas estampas\nen total?',a:17,o:[16,17,18,15],h:'9 más 8'}]}},
+   {name:'⚔️ Jefe: Coqui Cero',isBoss:true,tiers:{
+    1:[{t:'JEFE',q:'¿Cuánto es\n8 + 4?',a:12,o:[11,12,13,10],h:'¡El jefe ataca! 👿'},
+       {t:'JEFE',q:'¿Cuánto es\n10 − 4?',a:6,o:[5,6,7,4],h:'Coqui Cero ríe... 😈'},
+       {t:'JEFE',q:'¿Cuánto es\n7 + 5?',a:12,o:[11,12,13,10],h:'¡Concentración! 🔥'},
+       {t:'JEFE',q:'¿Cuánto es\n11 − 3?',a:8,o:[7,8,9,6],h:'¡Ya casi! 💪'},
+       {t:'JEFE',q:'¿Cuánto es\n6 + 7?',a:13,o:[12,13,14,11],h:'¡El golpe final! 🏆'}],
+    2:[{t:'JEFE',q:'¿Cuánto es\n10 + 8?',a:18,o:[17,18,19,16],h:'¡El jefe ataca! 👿'},
+       {t:'JEFE',q:'¿Cuánto es\n15 − 7?',a:8,o:[7,8,9,6],h:'Coqui Cero ríe... 😈'},
+       {t:'JEFE',q:'¿Cuánto es\n12 + 6?',a:18,o:[17,18,19,16],h:'¡Concentración! 🔥'},
+       {t:'JEFE',q:'¿Cuánto es\n20 − 8?',a:12,o:[11,12,13,10],h:'¡Ya casi! 💪'},
+       {t:'JEFE',q:'¿Cuánto es\n9 + 9?',a:18,o:[17,18,19,20],h:'¡El golpe final! 🏆'}],
+    3:[{t:'JEFE',q:'¿Cuánto es\n19 − 8?',a:11,o:[10,11,12,9],h:'¡El jefe ataca! 👿'},
+       {t:'JEFE',q:'¿Cuánto es\n13 + 8?',a:21,o:[19,20,21,22],h:'Coqui Cero ríe... 😈'},
+       {t:'JEFE',q:'¿Cuánto es\n20 − 7?',a:13,o:[12,13,14,11],h:'¡Concentración! 🔥'},
+       {t:'JEFE',q:'¿Cuánto es\n16 + 5?',a:21,o:[20,21,22,19],h:'¡Ya casi! 💪'},
+       {t:'JEFE',q:'¿Cuánto es\n25 − 8?',a:17,o:[16,17,18,15],h:'¡El golpe final! 🏆'}]}}
+  ]},
+ {id:1,name:'Mundo 2: Multiplicación',emoji:'✖️',desc:'Grupos iguales con Cleto',color:'world-1',hearts:3,
+  boss_taunt:'🌙 ¿La tabla del 4, NOMBRE? ¡A ver si puedes!',diagTopics:['Grupos'],
+  levels:[
+   {name:'Grupos iguales',tiers:{
+    1:[{t:'Grupos',q:'¿Cuánto es\n2 grupos de 2?',a:4,o:[3,4,5,2],h:'2×2'},
+       {t:'Grupos',q:'¿Cuánto es\n2 grupos de 3?',a:6,o:[5,6,7,4],h:'2×3'},
+       {t:'Grupos',q:'¿Cuánto es\n3 grupos de 2?',a:6,o:[5,6,7,4],h:'3×2'},
+       {t:'Grupos',q:'¿Cuánto es\n2 grupos de 4?',a:8,o:[6,8,10,4],h:'2×4'},
+       {t:'Grupos',q:'¿Cuánto es\n4 grupos de 2?',a:8,o:[6,8,10,4],h:'4×2'}],
+    2:[{t:'Tabla×2',q:'¿Cuánto es\n2 × 5?',a:10,o:[8,10,12,6],h:'La tabla del 2 🔢'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 2?',a:10,o:[8,10,12,6],h:'La tabla del 5'},
+       {t:'Tabla×2',q:'¿Cuánto es\n2 × 6?',a:12,o:[10,12,14,8],h:'Dos por seis'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 3?',a:15,o:[10,15,20,12],h:'Termina en 0 o 5'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 4?',a:20,o:[15,20,25,10],h:'Cinco por cuatro'}],
+    3:[{t:'Tabla×3',q:'¿Cuánto es\n3 × 4?',a:12,o:[9,12,15,8],h:'Tres por cuatro 🧩'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 3?',a:12,o:[8,12,16,10],h:'Cuatro por tres'},
+       {t:'Tabla×3',q:'¿Cuánto es\n3 × 6?',a:18,o:[15,18,21,12],h:'Tres por seis'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 4?',a:16,o:[12,16,20,8],h:'Cuatro por cuatro'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 5?',a:20,o:[16,20,24,12],h:'Cuatro por cinco'}]}},
+   {name:'Tabla del 2 y del 5',tiers:{
+    1:[{t:'Tabla×2',q:'¿Cuánto es\n2 × 1?',a:2,o:[1,2,3,4],h:'Tabla del 2: dobles'},
+       {t:'Tabla×2',q:'¿Cuánto es\n2 × 2?',a:4,o:[2,4,6,3],h:'Dos por dos'},
+       {t:'Tabla×2',q:'¿Cuánto es\n2 × 3?',a:6,o:[4,6,8,3],h:'Dos por tres'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 1?',a:5,o:[4,5,6,3],h:'Tabla del 5'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 2?',a:10,o:[8,10,12,5],h:'Cinco por dos'}],
+    2:[{t:'Tabla×2',q:'¿Cuánto es\n2 × 5?',a:10,o:[8,10,12,6],h:'La tabla del 2'},
+       {t:'Tabla×2',q:'¿Cuánto es\n2 × 7?',a:14,o:[12,14,16,10],h:'Dos por siete'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 3?',a:15,o:[10,15,20,12],h:'Termina en 0 o 5'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 4?',a:20,o:[15,20,25,10],h:'Cinco por cuatro'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 6?',a:30,o:[25,30,35,20],h:'Cinco por seis'}],
+    3:[{t:'Tabla×2',q:'¿Cuánto es\n2 × 9?',a:18,o:[16,18,20,14],h:'Dos por nueve'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 7?',a:35,o:[30,35,40,25],h:'Cinco por siete'},
+       {t:'Tabla×2',q:'¿Cuánto es\n2 × 8?',a:16,o:[14,16,18,12],h:'Dos por ocho'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 8?',a:40,o:[35,40,45,30],h:'Cinco por ocho'},
+       {t:'Tabla×5',q:'¿Cuánto es\n5 × 9?',a:45,o:[40,45,50,35],h:'Cinco por nueve'}]}},
+   {name:'Tabla del 3 y del 4',tiers:{
+    1:[{t:'Tabla×3',q:'¿Cuánto es\n3 × 1?',a:3,o:[2,3,4,6],h:'Tabla del 3'},
+       {t:'Tabla×3',q:'¿Cuánto es\n3 × 2?',a:6,o:[3,6,9,4],h:'Tres por dos'},
+       {t:'Tabla×3',q:'¿Cuánto es\n3 × 3?',a:9,o:[6,9,12,8],h:'Tres por tres'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 1?',a:4,o:[3,4,5,8],h:'Tabla del 4'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 2?',a:8,o:[4,8,12,6],h:'Cuatro por dos'}],
+    2:[{t:'Tabla×3',q:'¿Cuánto es\n3 × 4?',a:12,o:[9,12,15,8],h:'Tres por cuatro'},
+       {t:'Tabla×3',q:'¿Cuánto es\n3 × 5?',a:15,o:[12,15,18,9],h:'Tres por cinco'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 3?',a:12,o:[8,12,16,10],h:'Cuatro por tres'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 4?',a:16,o:[12,16,20,8],h:'Cuatro por cuatro'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 5?',a:20,o:[16,20,24,12],h:'Cuatro por cinco'}],
+    3:[{t:'Tabla×3',q:'¿Cuánto es\n3 × 7?',a:21,o:[18,21,24,15],h:'Tres por siete'},
+       {t:'Tabla×3',q:'¿Cuánto es\n3 × 8?',a:24,o:[21,24,27,18],h:'Tres por ocho'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 6?',a:24,o:[20,24,28,16],h:'Cuatro por seis'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 7?',a:28,o:[24,28,32,20],h:'Cuatro por siete'},
+       {t:'Tabla×4',q:'¿Cuánto es\n4 × 8?',a:32,o:[28,32,36,24],h:'Cuatro por ocho'}]}},
+   {name:'🧠 Problemas razonados',tiers:{
+    1:[{t:'Razonamiento',story:'Coqui tiene 2 cajas con 3 galletas cada una. ¿Cuántas galletas en total?',q:'¿Cuántas galletas\nen total?',a:6,o:[5,6,7,4],h:'2×3 🍪'},
+       {t:'Razonamiento',story:'NOMBRE pone 2 flores en cada mesa. Hay 3 mesas. ¿Cuántas flores necesita?',q:'¿Cuántas flores\nnecesita?',a:6,o:[5,6,7,4],h:'3×2 🌸'},
+       {t:'Razonamiento',story:'Cleto tiene 2 bolsas con 4 canicas cada una. ¿Cuántas canicas?',q:'¿Cuántas canicas\ntiene Cleto?',a:8,o:[6,8,10,4],h:'2×4 🎱'},
+       {t:'Razonamiento',story:'Hay 3 niños y cada uno tiene 2 lápices. ¿Cuántos lápices en total?',q:'¿Cuántos lápices\nen total?',a:6,o:[5,6,7,4],h:'3×2 ✏️'},
+       {t:'Razonamiento',story:'En la tienda hay 2 estantes con 3 juguetes cada uno. ¿Cuántos juguetes?',q:'¿Cuántos juguetes\nen total?',a:6,o:[5,6,7,4],h:'2×3 🧸'}],
+    2:[{t:'Razonamiento',story:'Coqui tiene 3 cajas con 4 galletas cada una. ¿Cuántas galletas en total?',q:'¿Cuántas galletas\nen total?',a:12,o:[10,12,14,8],h:'3×4 🍪'},
+       {t:'Razonamiento',story:'NOMBRE pone 2 flores en cada mesa. Hay 5 mesas. ¿Cuántas flores necesita?',q:'¿Cuántas flores\nnecesita?',a:10,o:[7,10,12,8],h:'5×2 🌸'},
+       {t:'Razonamiento',story:'Cleto tiene 4 bolsas con 3 canicas cada una. ¿Cuántas canicas?',q:'¿Cuántas canicas\ntiene Cleto?',a:12,o:[10,12,14,9],h:'4×3 🎱'},
+       {t:'Razonamiento',story:'Hay 5 niños y cada uno tiene 2 lápices. ¿Cuántos lápices en total?',q:'¿Cuántos lápices\nen total?',a:10,o:[7,10,12,8],h:'5×2 ✏️'},
+       {t:'Razonamiento',story:'En la tienda hay 3 estantes con 5 juguetes. ¿Cuántos juguetes en total?',q:'¿Cuántos juguetes\nen total?',a:15,o:[12,15,18,10],h:'3×5 🧸'}],
+    3:[{t:'Razonamiento',story:'Coqui tiene 4 cajas con 5 galletas cada una. ¿Cuántas galletas en total?',q:'¿Cuántas galletas\nen total?',a:20,o:[16,20,24,15],h:'4×5 🍪'},
+       {t:'Razonamiento',story:'NOMBRE pone 3 flores en cada mesa. Hay 5 mesas. ¿Cuántas flores necesita?',q:'¿Cuántas flores\nnecesita?',a:15,o:[12,15,18,10],h:'5×3 🌸'},
+       {t:'Razonamiento',story:'Cleto tiene 4 bolsas con 4 canicas. ¿Cuántas canicas en total?',q:'¿Cuántas canicas\ntiene Cleto?',a:16,o:[12,16,20,8],h:'4×4 🎱'},
+       {t:'Razonamiento',story:'Hay 4 niños y cada uno tiene 4 lápices. ¿Cuántos lápices en total?',q:'¿Cuántos lápices\nen total?',a:16,o:[12,16,20,8],h:'4×4 ✏️'},
+       {t:'Razonamiento',story:'En la tienda hay 4 estantes con 5 juguetes. ¿Cuántos juguetes en total?',q:'¿Cuántos juguetes\nen total?',a:20,o:[15,20,25,16],h:'4×5 🧸'}]}},
+   {name:'⚔️ Jefe: Coqui Cero',isBoss:true,tiers:{
+    1:[{t:'JEFE',q:'¿Cuánto es\n2 × 4?',a:8,o:[6,8,10,4],h:'😈 Dos por cuatro'},
+       {t:'JEFE',q:'¿Cuánto es\n3 × 3?',a:9,o:[6,9,12,8],h:'Tres por tres 🧠'},
+       {t:'JEFE',q:'¿Cuánto es\n5 × 2?',a:10,o:[8,10,12,6],h:'¡Concentración! 🔥'},
+       {t:'JEFE',q:'¿Cuánto es\n2 × 5?',a:10,o:[8,10,12,6],h:'Coqui tiembla... 💪'},
+       {t:'JEFE',q:'¿Cuánto es\n4 × 3?',a:12,o:[9,12,15,8],h:'¡El golpe final! 🏆'}],
+    2:[{t:'JEFE',q:'¿Cuánto es\n5 × 5?',a:25,o:[20,25,30,15],h:'😈 Cinco por cinco'},
+       {t:'JEFE',q:'¿Cuánto es\n3 × 6?',a:18,o:[15,18,21,12],h:'Tres por seis 🧠'},
+       {t:'JEFE',q:'¿Cuánto es\n4 × 6?',a:24,o:[20,24,28,16],h:'¡Concentración! 🔥'},
+       {t:'JEFE',q:'¿Cuánto es\n2 × 9?',a:18,o:[16,18,20,14],h:'Coqui tiembla... 💪'},
+       {t:'JEFE',q:'¿Cuánto es\n5 × 7?',a:35,o:[30,35,40,25],h:'¡El golpe final! 🏆'}],
+    3:[{t:'JEFE',q:'¿Cuánto es\n4 × 7?',a:28,o:[24,28,32,20],h:'😈 Cuatro por siete'},
+       {t:'JEFE',q:'¿Cuánto es\n3 × 8?',a:24,o:[21,24,27,18],h:'Tres por ocho 🧠'},
+       {t:'JEFE',q:'¿Cuánto es\n4 × 8?',a:32,o:[28,32,36,24],h:'¡Concentración! 🔥'},
+       {t:'JEFE',q:'¿Cuánto es\n5 × 9?',a:45,o:[40,45,50,35],h:'Coqui tiembla... 💪'},
+       {t:'JEFE',q:'¿Cuánto es\n3 × 9?',a:27,o:[24,27,30,21],h:'¡El golpe final! 🏆'}]}}
+  ]},
+ {id:2,name:'Mundo 3: Fracciones',emoji:'🍕',desc:'Cortando el pastel con Coqui',color:'world-2',hearts:3,
+  boss_taunt:'😏 ¿Cuánto es la mitad de 18, NOMBRE? ¡Demuéstralo!',diagTopics:['Mitad'],
+  levels:[
+   {name:'La mitad',tiers:{
+    1:[{t:'Mitad',q:'¿Cuánto es la\nmitad de 4?',a:2,o:[1,2,3,4],h:'4 entre 2 ✂️'},
+       {t:'Mitad',q:'¿Cuánto es la\nmitad de 6?',a:3,o:[2,3,4,1],h:'6 entre 2'},
+       {t:'Mitad',q:'¿Cuánto es la\nmitad de 8?',a:4,o:[3,4,5,2],h:'8 entre 2'},
+       {t:'Mitad',q:'¿Cuánto es la\nmitad de 2?',a:1,o:[1,2,3,4],h:'2 entre 2'},
+       {t:'Mitad',q:'¿Cuánto es la\nmitad de 10?',a:5,o:[4,5,6,3],h:'10 entre 2'}],
+    2:[{t:'Mitad',q:'¿Cuánto es la\nmitad de 12?',a:6,o:[5,6,7,4],h:'12 entre 2 🍕'},
+       {t:'Mitad',q:'¿Cuánto es la\nmitad de 14?',a:7,o:[6,7,8,5],h:'14 entre 2'},
+       {t:'Mitad',q:'¿Cuánto es la\nmitad de 16?',a:8,o:[6,7,8,9],h:'16 entre 2'},
+       {t:'Mitad',q:'¿Cuánto es la\nmitad de 18?',a:9,o:[8,9,10,6],h:'18 entre 2'},
+       {t:'Mitad',q:'¿Cuánto es la\nmitad de 20?',a:10,o:[8,10,12,5],h:'20 entre 2'}],
+    3:[{t:'Mitad',q:'¿Cuánto es la\nmitad de 24?',a:12,o:[10,12,14,8],h:'24 entre 2'},
+       {t:'Mitad',q:'¿Cuánto es la\nmitad de 30?',a:15,o:[12,15,18,10],h:'30 entre 2'},
+       {t:'¼',q:'¿Cuánto es\n¼ de 8?',a:2,o:[1,2,4,8],h:'8 entre 4'},
+       {t:'¼',q:'¿Cuánto es\n¼ de 12?',a:3,o:[2,3,4,6],h:'12 entre 4'},
+       {t:'¼',q:'¿Cuánto es\n¼ de 16?',a:4,o:[3,4,5,8],h:'16 entre 4'}]}},
+   {name:'Mitad y cuarto',tiers:{
+    1:[{t:'Fracciones',q:'¿Cuál es más\ngrande?\n½ o ¼',a:'½',o:['½','¼','igual','¾'],h:'¿Cuánto del pastel? 🎂'},
+       {t:'Mitad',q:'¿Cuánto es la\nmitad de 4?',a:2,o:[1,2,3,4],h:'4 entre 2'},
+       {t:'¼',q:'¿Cuánto es\n¼ de 4?',a:1,o:[1,2,3,4],h:'4 entre 4'},
+       {t:'Fracciones',q:'Una pizza tiene\n2 rebanadas iguales.\n¿Qué fracción es\ncada rebanada?',a:'½',o:['½','¼','⅓','1'],h:'2 partes iguales 🍕'},
+       {t:'Fracciones',q:'¿Cuánto es\n½ + ½?',a:1,o:['½',1,'1½',2],h:'Dos mitades = uno'}],
+    2:[{t:'¼',q:'¿Cuánto es\n¼ de 8?',a:2,o:[1,2,4,8],h:'8 entre 4'},
+       {t:'¼',q:'¿Cuánto es\n¼ de 12?',a:3,o:[2,3,4,6],h:'12 entre 4'},
+       {t:'Fracciones',q:'¿Cuál es más\ngrande?\n¾ o ½',a:'¾',o:['½','¾','igual','¼'],h:'Tres cuartos vs mitad'},
+       {t:'Fracciones',q:'¿Cuánto es\n¼ + ¼?',a:'½',o:['¼','½','¾',1],h:'Dos cuartos = mitad'},
+       {t:'¼',q:'¿Cuánto es\n¼ de 20?',a:5,o:[4,5,6,10],h:'20 entre 4'}],
+    3:[{t:'Fracciones',q:'¿Cuánto es\n¾ de 8?',a:6,o:[4,6,8,2],h:'¼ de 8 = 2, ×3'},
+       {t:'Fracciones',q:'¿Cuánto es\n¾ de 12?',a:9,o:[6,9,12,3],h:'¼ de 12 = 3, ×3'},
+       {t:'¼',q:'¿Cuánto es\n¼ de 24?',a:6,o:[4,6,8,12],h:'24 entre 4'},
+       {t:'Fracciones',q:'¿Cuánto es\n¾ de 20?',a:15,o:[10,15,20,5],h:'¼ de 20 = 5, ×3'},
+       {t:'Fracciones',q:'¿Cuánto es\n¼ + ¾?',a:1,o:['½','¾',1,'1½'],h:'¡Completa el entero!'}]}},
+   {name:'Fracciones de números',tiers:{
+    1:[{t:'Fracciones',q:'¿Cuánto es\n½ de 6?',a:3,o:[2,3,4,1],h:'6 entre 2'},
+       {t:'Fracciones',q:'¿Cuánto es\n½ de 8?',a:4,o:[3,4,5,2],h:'8 entre 2'},
+       {t:'Fracciones',q:'¿Cuánto es\n½ de 10?',a:5,o:[4,5,6,3],h:'10 entre 2'},
+       {t:'Fracciones',q:'¿Cuánto es\n½ de 12?',a:6,o:[5,6,7,4],h:'12 entre 2'},
+       {t:'Fracciones',q:'¿Cuánto es\n½ de 4?',a:2,o:[1,2,3,4],h:'4 entre 2'}],
+    2:[{t:'Fracciones',q:'¿Cuánto es\n½ de 14?',a:7,o:[6,7,8,5],h:'14 entre 2'},
+       {t:'Fracciones',q:'¿Cuánto es\n½ de 18?',a:9,o:[8,9,10,6],h:'18 entre 2'},
+       {t:'¼',q:'¿Cuánto es\n¼ de 16?',a:4,o:[3,4,5,8],h:'16 entre 4'},
+       {t:'¼',q:'¿Cuánto es\n¼ de 20?',a:5,o:[4,5,6,10],h:'20 entre 4'},
+       {t:'Fracciones',q:'¿Cuánto es\n½ de 16?',a:8,o:[7,8,9,4],h:'16 entre 2'}],
+    3:[{t:'Fracciones',q:'¿Cuánto es\n½ de 30?',a:15,o:[12,15,18,10],h:'30 entre 2'},
+       {t:'¼',q:'¿Cuánto es\n¼ de 24?',a:6,o:[4,6,8,12],h:'24 entre 4'},
+       {t:'Fracciones',q:'¿Cuánto es\n¾ de 8?',a:6,o:[4,6,8,2],h:'¼×3'},
+       {t:'Fracciones',q:'¿Cuánto es\n¾ de 20?',a:15,o:[10,15,20,5],h:'¼ de 20=5, ×3'},
+       {t:'Fracciones',q:'¿Cuánto es\n¾ de 24?',a:18,o:[12,18,24,6],h:'¼ de 24=6, ×3'}]}},
+   {name:'🧠 Problemas razonados',tiers:{
+    1:[{t:'Razonamiento',story:'Coqui tiene una pizza con 4 rebanadas. Se come la mitad. ¿Cuántas comió?',q:'¿Cuántas rebanadas\ncomió?',a:2,o:[1,2,3,4],h:'Mitad de 4 🍕'},
+       {t:'Razonamiento',story:'NOMBRE tiene 6 caramelos. Quiere dar la mitad a su amigo. ¿Cuántos le da?',q:'¿Cuántos caramelos\nle da?',a:3,o:[2,3,4,1],h:'Mitad de 6 🍬'},
+       {t:'Razonamiento',story:'Cleto tiene chocolate de 8 pedazos. Come la mitad. ¿Cuántos quedan?',q:'¿Cuántos pedazos\nquedan?',a:4,o:[3,4,5,2],h:'Mitad de 8 🍫'},
+       {t:'Razonamiento',story:'Hay 8 globos en la fiesta. La mitad son rojos. ¿Cuántos globos rojos?',q:'¿Cuántos globos\nrojos hay?',a:4,o:[3,4,5,2],h:'Mitad de 8 🎈'},
+       {t:'Razonamiento',story:'Coqui Cero tiene 10 monedas. NOMBRE le gana la mitad. ¿Cuántas gana NOMBRE?',q:'¿Cuántas monedas\ngana?',a:5,o:[4,5,6,3],h:'Mitad de 10 🪙'}],
+    2:[{t:'Razonamiento',story:'Coqui tiene una pizza con 8 rebanadas. Se come la mitad. ¿Cuántas comió?',q:'¿Cuántas rebanadas\ncomió?',a:4,o:[3,4,5,2],h:'Mitad de 8 🍕'},
+       {t:'Razonamiento',story:'NOMBRE tiene 12 caramelos. Quiere dar ¼ a su amigo. ¿Cuántos le da?',q:'¿Cuántos caramelos\nle da?',a:3,o:[2,3,4,6],h:'¼ de 12 🍬'},
+       {t:'Razonamiento',story:'Cleto tiene chocolate de 16 pedazos. Come la mitad. ¿Cuántos quedan?',q:'¿Cuántos pedazos\nquedan?',a:8,o:[6,8,10,4],h:'Mitad de 16 🍫'},
+       {t:'Razonamiento',story:'Hay 16 globos. La mitad son rojos. ¿Cuántos globos rojos?',q:'¿Cuántos globos\nrojos hay?',a:8,o:[6,8,10,4],h:'Mitad de 16 🎈'},
+       {t:'Razonamiento',story:'Coqui Cero tiene 20 monedas. NOMBRE le gana ¼. ¿Cuántas gana NOMBRE?',q:'¿Cuántas monedas\ngana?',a:5,o:[4,5,6,10],h:'¼ de 20 🪙'}],
+    3:[{t:'Razonamiento',story:'Coqui tiene una pizza de 12 rebanadas. Come ¾. ¿Cuántas comió?',q:'¿Cuántas rebanadas\ncomió?',a:9,o:[6,9,12,3],h:'¾ de 12 🍕'},
+       {t:'Razonamiento',story:'NOMBRE tiene 24 caramelos y da ¼ a su amigo. ¿Cuántos le da?',q:'¿Cuántos caramelos\nle da?',a:6,o:[4,6,8,12],h:'¼ de 24 🍬'},
+       {t:'Razonamiento',story:'Cleto tiene 20 pedazos de chocolate. Come ½. ¿Cuántos quedan?',q:'¿Cuántos pedazos\nquedan?',a:10,o:[8,10,12,5],h:'Mitad de 20 🍫'},
+       {t:'Razonamiento',story:'Hay 24 globos. ¾ son de colores. ¿Cuántos son de colores?',q:'¿Cuántos globos\nson de colores?',a:18,o:[12,18,24,6],h:'¾ de 24 🎈'},
+       {t:'Razonamiento',story:'Coqui Cero tiene 24 monedas. NOMBRE le gana ¾. ¿Cuántas gana NOMBRE?',q:'¿Cuántas monedas\ngana?',a:18,o:[12,18,24,6],h:'¾ de 24 🪙'}]}},
+   {name:'⚔️ Jefe: Coqui Cero',isBoss:true,tiers:{
+    1:[{t:'JEFE',q:'¿Cuánto es la\nmitad de 10?',a:5,o:[4,5,6,3],h:'😈 10 entre 2'},
+       {t:'JEFE',q:'¿Cuánto es la\nmitad de 12?',a:6,o:[5,6,7,4],h:'12 entre 2 🧠'},
+       {t:'JEFE',q:'¿Cuánto es la\nmitad de 8?',a:4,o:[3,4,5,2],h:'¡Concentración! 🔥'},
+       {t:'JEFE',q:'¿Cuál es más\ngrande?\n½ o ¼',a:'½',o:['½','¼','igual','¾'],h:'Coqui tiembla... 💪'},
+       {t:'JEFE',q:'¿Cuánto es\n½ + ½?',a:1,o:['½',1,'1½',2],h:'¡El golpe final! 🏆'}],
+    2:[{t:'JEFE',q:'¿Cuánto es la\nmitad de 18?',a:9,o:[8,9,10,6],h:'😈 18 entre 2'},
+       {t:'JEFE',q:'¿Cuánto es\n¼ de 16?',a:4,o:[3,4,5,8],h:'16 entre 4 🧠'},
+       {t:'JEFE',q:'¿Cuánto es la\nmitad de 20?',a:10,o:[8,10,12,5],h:'¡Concentración! 🔥'},
+       {t:'JEFE',q:'¿Cuál es más\ngrande?\n¾ o ½',a:'¾',o:['½','¾','igual','¼'],h:'Coqui tiembla... 💪'},
+       {t:'JEFE',q:'¿Cuánto es\n¼ + ¼?',a:'½',o:['¼','½','¾',1],h:'¡El golpe final! 🏆'}],
+    3:[{t:'JEFE',q:'¿Cuánto es\n¾ de 12?',a:9,o:[6,9,12,3],h:'😈 ¼×3'},
+       {t:'JEFE',q:'¿Cuánto es\n¼ de 24?',a:6,o:[4,6,8,12],h:'24 entre 4 🧠'},
+       {t:'JEFE',q:'¿Cuánto es la\nmitad de 30?',a:15,o:[12,15,18,10],h:'¡Concentración! 🔥'},
+       {t:'JEFE',q:'¿Cuánto es\n¾ de 20?',a:15,o:[10,15,20,5],h:'Coqui tiembla... 💪'},
+       {t:'JEFE',q:'¿Cuánto es\n¾ de 24?',a:18,o:[12,18,24,6],h:'¡El golpe final! 🏆'}]}}
+  ]},
+ {id:3,name:'Mundo 4: Formas y Medidas',emoji:'📐',desc:'Figuras mágicas con Cleto',color:'world-3',hearts:3,
+  boss_taunt:'🌙 ¿Cuántos lados tiene un hexágono, NOMBRE? ¡A ver!',diagTopics:['Figuras'],
+  levels:[
+   {name:'Figuras básicas',tiers:{
+    1:[{t:'Figuras',q:'¿Cuántos lados\ntiene un triángulo?',a:3,o:[2,3,4,5],h:'Tri = 3 📐'},
+       {t:'Figuras',q:'¿Cuántos lados\ntiene un cuadrado?',a:4,o:[3,4,5,6],h:'Cuadrado = 4 lados'},
+       {t:'Figuras',q:'¿Cuántos lados\ntiene un rectángulo?',a:4,o:[3,4,5,6],h:'Como el cuadrado'},
+       {t:'Figuras',q:'¿Cuántos lados\ntiene un círculo?',a:0,o:[0,1,2,3],h:'¡El círculo no tiene lados!'},
+       {t:'Figuras',q:'Un cuadrado tiene\n4 lados. ¿Cuántos\nángulos tiene?',a:4,o:[2,3,4,5],h:'Un ángulo por esquina'}],
+    2:[{t:'Figuras',q:'¿Cuántos lados\ntiene un pentágono?',a:5,o:[4,5,6,7],h:'Penta = 5 ⭐'},
+       {t:'Figuras',q:'¿Cuántos lados\ntiene un hexágono?',a:6,o:[5,6,7,8],h:'Hexa = 6 🔷'},
+       {t:'Figuras',q:'¿Cuántos vértices\ntiene un triángulo?',a:3,o:[2,3,4,5],h:'Un vértice por punta'},
+       {t:'Perímetro',q:'Cuadrado de lado 3.\n¿Cuánto mide\nsu contorno?',a:12,o:[9,12,15,6],h:'4 × 3 📏'},
+       {t:'Perímetro',q:'Triángulo con lados\n3, 3 y 3.\n¿Cuánto mide\nsu contorno?',a:9,o:[6,9,12,3],h:'Suma los 3 lados'}],
+    3:[{t:'Perímetro',q:'Rectángulo de\n5 × 3.\n¿Cuánto mide\nsu contorno?',a:16,o:[15,16,18,8],h:'2×5 + 2×3'},
+       {t:'Área',q:'Cuadrado de lado 3.\n¿Cuánto espacio ocupa?',a:9,o:[6,9,12,3],h:'3 × 3'},
+       {t:'Área',q:'Rectángulo de 4 × 2.\n¿Cuánto espacio ocupa?',a:8,o:[6,8,10,12],h:'4 × 2'},
+       {t:'Área',q:'Cuadrado de lado 4.\n¿Cuánto espacio ocupa?',a:16,o:[12,16,20,8],h:'4 × 4'},
+       {t:'Perímetro',q:'Cuadrado de lado 5.\n¿Cuánto mide\nsu contorno?',a:20,o:[15,20,25,10],h:'4 × 5'}]}},
+   {name:'Medir el contorno',tiers:{
+    1:[{t:'Perímetro',q:'Cuadrado de lado 2.\n¿Cuánto mide\nsu contorno?',a:8,o:[4,8,12,6],h:'4 × 2 📏'},
+       {t:'Perímetro',q:'Cuadrado de lado 3.\n¿Cuánto mide\nsu contorno?',a:12,o:[9,12,15,6],h:'4 × 3'},
+       {t:'Perímetro',q:'Triángulo de\n2, 2 y 2.\n¿Cuánto mide\nsu contorno?',a:6,o:[4,6,8,3],h:'3 lados × 2'},
+       {t:'Perímetro',q:'Triángulo de\n3, 3 y 3.\n¿Cuánto mide\nsu contorno?',a:9,o:[6,9,12,3],h:'3 lados × 3'},
+       {t:'Perímetro',q:'Cuadrado de lado 4.\n¿Cuánto mide\nsu contorno?',a:16,o:[12,16,20,8],h:'4 × 4'}],
+    2:[{t:'Perímetro',q:'Rectángulo de\n4 × 2.\n¿Cuánto mide\nsu contorno?',a:12,o:[8,12,16,6],h:'2×4 + 2×2'},
+       {t:'Perímetro',q:'Cuadrado de lado 5.\n¿Cuánto mide\nsu contorno?',a:20,o:[15,20,25,10],h:'4 × 5'},
+       {t:'Perímetro',q:'Triángulo de\n2, 3 y 4.\n¿Cuánto mide\nsu contorno?',a:9,o:[7,9,11,8],h:'2+3+4'},
+       {t:'Perímetro',q:'Rectángulo de\n5 × 3.\n¿Cuánto mide\nsu contorno?',a:16,o:[15,16,18,8],h:'2×5 + 2×3'},
+       {t:'Perímetro',q:'Triángulo de\n4, 4 y 4.\n¿Cuánto mide\nsu contorno?',a:12,o:[8,12,16,4],h:'3 × 4'}],
+    3:[{t:'Perímetro',q:'Rectángulo de\n6 × 4.\n¿Cuánto mide\nsu contorno?',a:20,o:[10,20,24,16],h:'2×6 + 2×4'},
+       {t:'Perímetro',q:'Hexágono regular\nde lado 3.\n¿Cuánto mide\nsu contorno?',a:18,o:[15,18,21,12],h:'6 × 3'},
+       {t:'Perímetro',q:'Cuadrado de lado 6.\n¿Cuánto mide\nsu contorno?',a:24,o:[18,24,30,12],h:'4 × 6'},
+       {t:'Perímetro',q:'Triángulo de\n5, 6 y 7.\n¿Cuánto mide\nsu contorno?',a:18,o:[15,18,20,16],h:'5+6+7'},
+       {t:'Perímetro',q:'Cuadrado con\nperímetro 20.\n¿Cuánto mide\nsu lado?',a:5,o:[4,5,6,10],h:'20 ÷ 4'}]}},
+   {name:'Medir el espacio',tiers:{
+    1:[{t:'Área',q:'Cuadrado de lado 2.\n¿Cuánto espacio ocupa?',a:4,o:[2,4,8,6],h:'2 × 2'},
+       {t:'Área',q:'Cuadrado de lado 3.\n¿Cuánto espacio ocupa?',a:9,o:[6,9,12,3],h:'3 × 3'},
+       {t:'Área',q:'Rectángulo de 4 × 1.\n¿Cuánto espacio ocupa?',a:4,o:[2,4,5,8],h:'4 × 1'},
+       {t:'Área',q:'Rectángulo de 3 × 2.\n¿Cuánto espacio ocupa?',a:6,o:[5,6,7,8],h:'3 × 2'},
+       {t:'Área',q:'Rectángulo de 4 × 2.\n¿Cuánto espacio ocupa?',a:8,o:[6,8,10,12],h:'4 × 2'}],
+    2:[{t:'Área',q:'Cuadrado de lado 4.\n¿Cuánto espacio ocupa?',a:16,o:[12,16,20,8],h:'4 × 4'},
+       {t:'Área',q:'Rectángulo de 5 × 3.\n¿Cuánto espacio ocupa?',a:15,o:[10,15,20,8],h:'5 × 3'},
+       {t:'Área',q:'Cuadrado de lado 5.\n¿Cuánto espacio ocupa?',a:25,o:[20,25,30,10],h:'5 × 5'},
+       {t:'Área',q:'Rectángulo de 6 × 2.\n¿Cuánto espacio ocupa?',a:12,o:[8,12,16,6],h:'6 × 2'},
+       {t:'Área',q:'Rectángulo de 4 × 4.\n¿Cuánto espacio ocupa?',a:16,o:[8,16,20,12],h:'4 × 4'}],
+    3:[{t:'Área',q:'Cuadrado de lado 6.\n¿Cuánto espacio ocupa?',a:36,o:[30,36,42,24],h:'6 × 6'},
+       {t:'Área',q:'Rectángulo de 7 × 3.\n¿Cuánto espacio ocupa?',a:21,o:[18,21,24,10],h:'7 × 3'},
+       {t:'Área',q:'Cuadrado de lado 7.\n¿Cuánto espacio ocupa?',a:49,o:[42,49,56,14],h:'7 × 7'},
+       {t:'Área',q:'Cuadrado con área 25.\n¿Cuánto mide\nsu lado?',a:5,o:[4,5,6,10],h:'¿Qué × qué = 25?'},
+       {t:'Área',q:'Rectángulo de 8 × 4.\n¿Cuánto espacio ocupa?',a:32,o:[24,32,40,12],h:'8 × 4'}]}},
+   {name:'🧠 Problemas razonados',tiers:{
+    1:[{t:'Razonamiento',story:'NOMBRE quiere poner cinta alrededor de un cuadrado de lado 3 cm. ¿Cuánta cinta necesita?',q:'¿Cuánta cinta\nnecesita?',a:12,o:[9,12,15,6],h:'4 × 3 cm 🖼️'},
+       {t:'Razonamiento',story:'Cleto dibuja un triángulo con tres lados de 3 cm cada uno. ¿Cuánto mide el contorno?',q:'¿Cuánto mide\nel contorno?',a:9,o:[6,9,12,3],h:'3 × 3 cm 📐'},
+       {t:'Razonamiento',story:'El jardín de Coqui es un cuadrado de lado 4 metros. ¿Cuántos metros cuadrados tiene?',q:'¿Cuántos metros\ncuadrados tiene?',a:16,o:[8,16,12,4],h:'4 × 4 🌿'},
+       {t:'Razonamiento',story:'La habitación tiene forma de rectángulo de 3 × 2 metros. ¿Cuántos metros cuadrados tiene?',q:'¿Cuántos metros\ncuadrados tiene?',a:6,o:[5,6,7,8],h:'3 × 2 🏠'},
+       {t:'Razonamiento',story:'Coqui Cero tiene una caja cuadrada de lado 2. ¿Cuánto espacio ocupa la tapa?',q:'¿Cuánto espacio\nocupa la tapa?',a:4,o:[2,4,6,8],h:'2 × 2 📦'}],
+    2:[{t:'Razonamiento',story:'NOMBRE quiere poner cinta alrededor de un cuadrado de lado 5 cm. ¿Cuánta cinta necesita?',q:'¿Cuánta cinta\nnecesita?',a:20,o:[15,20,25,10],h:'4 × 5 cm 🖼️'},
+       {t:'Razonamiento',story:'Cleto dibuja un triángulo con tres lados de 4 cm cada uno. ¿Cuánto mide el contorno?',q:'¿Cuánto mide\nel contorno?',a:12,o:[8,12,16,4],h:'3 × 4 cm 📐'},
+       {t:'Razonamiento',story:'La habitación mide 4 metros de largo y 3 de ancho. ¿Cuántos metros cuadrados tiene?',q:'¿Cuántos metros\ncuadrados tiene?',a:12,o:[7,12,14,10],h:'4 × 3 🏠'},
+       {t:'Razonamiento',story:'Coqui tiene un jardín cuadrado de lado 5 metros. ¿Cuántos metros cuadrados tiene?',q:'¿Cuántos metros\ncuadrados tiene?',a:25,o:[20,25,30,10],h:'5 × 5 🌿'},
+       {t:'Razonamiento',story:'Coqui Cero tiene una caja rectangular de 5 × 3. ¿Cuánto espacio ocupa la tapa?',q:'¿Cuánto espacio\nocupa la tapa?',a:15,o:[10,15,20,8],h:'5 × 3 📦'}],
+    3:[{t:'Razonamiento',story:'NOMBRE quiere poner cinta alrededor de un rectángulo de 6 × 4 cm. ¿Cuánta cinta necesita?',q:'¿Cuánta cinta\nnecesita?',a:20,o:[10,20,24,16],h:'2×6 + 2×4 🖼️'},
+       {t:'Razonamiento',story:'Un hexágono regular tiene lados de 4 cm. ¿Cuánto mide el contorno?',q:'¿Cuánto mide\nel contorno?',a:24,o:[20,24,28,16],h:'6 × 4 📐'},
+       {t:'Razonamiento',story:'La sala mide 6 metros de largo y 5 de ancho. ¿Cuántos metros cuadrados tiene?',q:'¿Cuántos metros\ncuadrados tiene?',a:30,o:[22,30,36,11],h:'6 × 5 🏠'},
+       {t:'Razonamiento',story:'Coqui tiene un jardín cuadrado con área de 36 metros. ¿Cuánto mide cada lado?',q:'¿Cuánto mide\ncada lado?',a:6,o:[4,6,8,9],h:'¿Qué × qué = 36? 🌿'},
+       {t:'Razonamiento',story:'Coqui Cero tiene una caja rectangular de 7 × 4. ¿Cuánto espacio ocupa la tapa?',q:'¿Cuánto espacio\nocupa la tapa?',a:28,o:[22,28,32,11],h:'7 × 4 📦'}]}},
+   {name:'⚔️ Jefe: Coqui Cero',isBoss:true,tiers:{
+    1:[{t:'JEFE',q:'¿Cuántos lados\ntiene un pentágono?',a:5,o:[4,5,6,7],h:'😈 Penta = 5'},
+       {t:'JEFE',q:'Cuadrado de lado 3.\n¿Cuánto mide\nsu contorno?',a:12,o:[9,12,15,6],h:'4 × 3 🧠'},
+       {t:'JEFE',q:'Rectángulo de 3 × 2.\n¿Cuánto espacio ocupa?',a:6,o:[5,6,7,8],h:'¡Concentración! 🔥'},
+       {t:'JEFE',q:'¿Cuántos lados\ntiene un hexágono?',a:6,o:[5,6,7,8],h:'Coqui tiembla... 💪'},
+       {t:'JEFE',q:'Cuadrado de lado 4.\n¿Cuánto espacio ocupa?',a:16,o:[12,16,20,8],h:'¡El golpe final! 🏆'}],
+    2:[{t:'JEFE',q:'¿Cuántos lados\ntiene un octágono?',a:8,o:[6,8,10,7],h:'😈 Octa = 8'},
+       {t:'JEFE',q:'Cuadrado de lado 5.\n¿Cuánto mide\nsu contorno?',a:20,o:[15,20,25,10],h:'4 × 5 🧠'},
+       {t:'JEFE',q:'Rectángulo de 5 × 4.\n¿Cuánto espacio ocupa?',a:20,o:[18,20,22,9],h:'5 × 4 🔥'},
+       {t:'JEFE',q:'Cuadrado de lado 5.\n¿Cuánto espacio ocupa?',a:25,o:[20,25,30,10],h:'Coqui tiembla... 💪'},
+       {t:'JEFE',q:'Rectángulo de 6 × 3.\n¿Cuánto mide\nsu contorno?',a:18,o:[9,18,24,12],h:'¡El golpe final! 🏆'}],
+    3:[{t:'JEFE',q:'Cuadrado de lado 7.\n¿Cuánto espacio ocupa?',a:49,o:[42,49,56,14],h:'😈 7 × 7'},
+       {t:'JEFE',q:'Hexágono regular\nde lado 5.\n¿Cuánto mide\nsu contorno?',a:30,o:[25,30,35,20],h:'6 × 5 🧠'},
+       {t:'JEFE',q:'Rectángulo de 7 × 4.\n¿Cuánto espacio ocupa?',a:28,o:[22,28,32,11],h:'7 × 4 🔥'},
+       {t:'JEFE',q:'Cuadrado con área 49.\n¿Cuánto mide\nsu lado?',a:7,o:[6,7,8,9],h:'¿Qué×qué=49? 💪'},
+       {t:'JEFE',q:'Rectángulo de 8 × 5.\n¿Cuánto espacio ocupa?',a:40,o:[35,40,45,13],h:'¡El golpe final! 🏆'}]}}
+  ]},
+ {id:4,name:'Mundo 5: Patrones y Lógica',emoji:'🔭',desc:'Descubriendo secretos numéricos',color:'world-4',hearts:3,
+  boss_taunt:'😈 ¡Los patrones son mi reino, NOMBRE! ¿Puedes descifrarlos?',diagTopics:['Patrones'],
+  levels:[
+   {name:'Patrones simples',tiers:{
+    1:[{t:'Patrones',q:'¿Qué sigue?\n1, 2, 3, 4, __',a:5,o:[4,5,6,7],h:'Suma 1 🔢'},
+       {t:'Patrones',q:'¿Qué sigue?\n2, 4, 6, 8, __',a:10,o:[9,10,11,12],h:'Suma 2'},
+       {t:'Patrones',q:'¿Qué sigue?\n5, 10, 15, 20, __',a:25,o:[22,25,30,20],h:'Suma 5'},
+       {t:'Patrones',q:'¿Qué sigue?\n10, 9, 8, 7, __',a:6,o:[5,6,7,4],h:'Resta 1'},
+       {t:'Patrones',q:'¿Qué sigue?\n10, 8, 6, 4, __',a:2,o:[1,2,3,0],h:'Resta 2'}],
+    2:[{t:'Patrones',q:'¿Qué sigue?\n1, 3, 5, 7, __',a:9,o:[8,9,10,11],h:'Números impares'},
+       {t:'Patrones',q:'¿Qué sigue?\n3, 6, 9, 12, __',a:15,o:[13,15,18,14],h:'Suma 3 (tabla del 3)'},
+       {t:'Patrones',q:'¿Qué sigue?\n20, 15, 10, 5, __',a:0,o:[0,2,4,1],h:'Resta 5'},
+       {t:'Patrones',q:'¿Qué sigue?\n4, 8, 12, 16, __',a:20,o:[18,20,22,24],h:'Suma 4'},
+       {t:'Patrones',q:'¿Qué sigue?\n100, 90, 80, 70, __',a:60,o:[50,60,65,55],h:'Resta 10'}],
+    3:[{t:'Patrones',q:'¿Qué sigue?\n2, 4, 8, 16, __',a:32,o:[24,30,32,18],h:'×2 cada vez 🚀'},
+       {t:'Patrones',q:'¿Qué sigue?\n1, 4, 9, 16, __',a:25,o:[20,25,30,24],h:'1×1, 2×2, 3×3, 4×4...'},
+       {t:'Patrones',q:'¿Qué sigue?\n3, 6, 12, 24, __',a:48,o:[30,36,48,40],h:'×2 cada vez'},
+       {t:'Patrones',q:'¿Qué sigue?\n1, 2, 4, 8, __',a:16,o:[12,16,10,20],h:'Cada número es el doble'},
+       {t:'Patrones',q:'¿Qué sigue?\n2, 5, 8, 11, __',a:14,o:[12,13,14,15],h:'Suma 3'}]}},
+   {name:'El número desconocido',tiers:{
+    1:[{t:'Incógnita',q:'__ + 2 = 5\n¿Qué va en __?',a:3,o:[2,3,4,7],h:'5 menos 2 🔍'},
+       {t:'Incógnita',q:'3 + __ = 7\n¿Qué va en __?',a:4,o:[3,4,5,10],h:'7 menos 3'},
+       {t:'Incógnita',q:'__ − 1 = 4\n¿Qué va en __?',a:5,o:[3,4,5,6],h:'4 más 1'},
+       {t:'Incógnita',q:'6 − __ = 2\n¿Qué va en __?',a:4,o:[2,4,6,8],h:'6 menos ? = 2'},
+       {t:'Incógnita',q:'2 × __ = 8\n¿Qué va en __?',a:4,o:[3,4,5,6],h:'¿Cuántos 2 dan 8?'}],
+    2:[{t:'Incógnita',q:'__ + 3 = 7\n¿Qué va en __?',a:4,o:[3,4,5,10],h:'7 menos 3 🔍'},
+       {t:'Incógnita',q:'5 + __ = 9\n¿Qué va en __?',a:4,o:[3,4,5,14],h:'9 menos 5'},
+       {t:'Incógnita',q:'__ − 2 = 6\n¿Qué va en __?',a:8,o:[4,6,8,12],h:'6 más 2'},
+       {t:'Incógnita',q:'10 − __ = 4\n¿Qué va en __?',a:6,o:[4,6,8,14],h:'10 menos ? = 4'},
+       {t:'Incógnita',q:'3 × __ = 12\n¿Qué va en __?',a:4,o:[3,4,5,6],h:'¿Cuántos 3 dan 12?'}],
+    3:[{t:'Incógnita',q:'__ + 9 = 17\n¿Qué va en __?',a:8,o:[6,8,10,26],h:'17 menos 9 🧠'},
+       {t:'Incógnita',q:'4 × __ = 20\n¿Qué va en __?',a:5,o:[4,5,6,8],h:'¿Cuántos 4 en 20?'},
+       {t:'Incógnita',q:'__ − 7 = 8\n¿Qué va en __?',a:15,o:[1,14,15,16],h:'8 más 7'},
+       {t:'Incógnita',q:'5 × __ = 25\n¿Qué va en __?',a:5,o:[4,5,6,20],h:'¿Cuántos 5 en 25?'},
+       {t:'Incógnita',q:'__ ÷ 3 = 4\n¿Qué va en __?',a:12,o:[1,7,12,16],h:'4 × 3'}]}},
+   {name:'Patrones con lógica',tiers:{
+    1:[{t:'Lógica',q:'El doble de 3 es...',a:6,o:[5,6,7,8],h:'3 × 2 🧠'},
+       {t:'Lógica',q:'El doble de 5 es...',a:10,o:[8,10,12,5],h:'5 × 2'},
+       {t:'Lógica',q:'¿Qué sigue?\n2, 4, 6, 8, __',a:10,o:[9,10,11,12],h:'Suma 2'},
+       {t:'Lógica',q:'¿Qué sigue?\n5, 10, 15, __',a:20,o:[18,20,22,25],h:'Suma 5'},
+       {t:'Lógica',q:'Tengo 3 grupos\nde 4. ¿Cuántos\nen total?',a:12,o:[7,12,10,9],h:'3 × 4'}],
+    2:[{t:'Lógica',q:'El doble de 8 es...',a:16,o:[14,16,18,8],h:'8 × 2 🧠'},
+       {t:'Lógica',q:'¿Qué sigue?\n2, 4, 8, 16, __',a:32,o:[24,30,32,18],h:'×2 cada vez'},
+       {t:'Lógica',q:'El doble de 9 es...',a:18,o:[16,18,20,9],h:'9 × 2'},
+       {t:'Lógica',q:'Tengo 4 grupos\nde 5. ¿Cuántos\nen total?',a:20,o:[16,20,24,9],h:'4 × 5'},
+       {t:'Lógica',q:'¿Qué sigue?\n1, 4, 9, 16, __',a:25,o:[20,25,30,24],h:'Cuadrados perfectos'}],
+    3:[{t:'Lógica',q:'El doble de 15\nmás 5 es...',a:35,o:[35,40,30,25],h:'15×2=30, +5 🧠'},
+       {t:'Lógica',q:'¿Qué sigue?\n3, 6, 12, 24, __',a:48,o:[30,36,48,40],h:'×2 cada vez'},
+       {t:'Lógica',q:'Tengo 5 grupos\nde 4, menos 2.\n¿Cuántos en total?',a:18,o:[17,18,20,22],h:'5×4=20, −2'},
+       {t:'Lógica',q:'¿Qué sigue?\n1, 1, 2, 3, 5, 8, __',a:13,o:[11,12,13,14],h:'Suma los dos anteriores'},
+       {t:'Lógica',q:'El doble de 12\nmenos 6 es...',a:18,o:[12,18,24,6],h:'12×2=24, −6'}]}},
+   {name:'🧠 Problemas razonados',tiers:{
+    1:[{t:'Razonamiento',story:'NOMBRE tiene 2 bolsas. En cada bolsa hay 3 canicas. ¿Cuántas canicas en total?',q:'¿Cuántas canicas\nen total?',a:6,o:[5,6,7,4],h:'2 × 3 🎱'},
+       {t:'Razonamiento',story:'Los números van de 2 en 2: 2, 4, 6... ¿Cuál es el siguiente después del 8?',q:'¿Cuál es el\nsiguiente número?',a:10,o:[9,10,11,12],h:'Suma 2 🔢'},
+       {t:'Razonamiento',story:'Cleto tiene el doble de puntos que NOMBRE. NOMBRE tiene 4 puntos. ¿Cuántos tiene Cleto?',q:'¿Cuántos puntos\ntiene Cleto?',a:8,o:[6,8,10,4],h:'Doble de 4 🎮'},
+       {t:'Razonamiento',story:'Coqui reparte 10 naranjas en grupos de 2. ¿Cuántos grupos puede hacer?',q:'¿Cuántos grupos\npuede hacer?',a:5,o:[3,5,7,4],h:'10 ÷ 2 🍊'},
+       {t:'Razonamiento',story:'NOMBRE quiere llegar a 10 saltando de 2 en 2 desde el 0. ¿Cuántos saltos da?',q:'¿Cuántos saltos\nda?',a:5,o:[4,5,6,7],h:'10 ÷ 2 🦘'}],
+    2:[{t:'Razonamiento',story:'NOMBRE tiene 3 bolsas. En cada bolsa hay 4 canicas. ¿Cuántas canicas en total?',q:'¿Cuántas canicas\nen total?',a:12,o:[10,12,14,7],h:'3 × 4 🎱'},
+       {t:'Razonamiento',story:'Los números siguen el patrón 4, 8, 12, 16... ¿Cuál será el siguiente?',q:'¿Cuál es el\nsiguiente número?',a:20,o:[18,20,22,24],h:'Suma 4 🔢'},
+       {t:'Razonamiento',story:'Cleto tiene el doble de puntos que NOMBRE. NOMBRE tiene 8 puntos. ¿Cuántos tiene Cleto?',q:'¿Cuántos puntos\ntiene Cleto?',a:16,o:[10,12,16,18],h:'Doble de 8 🎮'},
+       {t:'Razonamiento',story:'Coqui reparte 15 naranjas en grupos de 3. ¿Cuántos grupos puede hacer?',q:'¿Cuántos grupos\npuede hacer?',a:5,o:[3,5,6,4],h:'15 ÷ 3 🍊'},
+       {t:'Razonamiento',story:'NOMBRE quiere llegar a 30 saltando de 5 en 5 desde el 0. ¿Cuántos saltos da?',q:'¿Cuántos saltos\nda?',a:6,o:[5,6,7,8],h:'30 ÷ 5 🦘'}],
+    3:[{t:'Razonamiento',story:'NOMBRE tiene 4 bolsas con 5 canicas. Regala 2. ¿Cuántas le quedan?',q:'¿Cuántas canicas\nle quedan?',a:18,o:[16,18,20,22],h:'4×5=20, −2 🎱'},
+       {t:'Razonamiento',story:'Los números siguen el patrón 2, 4, 8, 16... ¿Cuál será el siguiente?',q:'¿Cuál es el\nsiguiente número?',a:32,o:[24,30,32,18],h:'×2 cada vez 🔢'},
+       {t:'Razonamiento',story:'Cleto tiene el triple de puntos que NOMBRE. NOMBRE tiene 6 puntos. ¿Cuántos tiene Cleto?',q:'¿Cuántos puntos\ntiene Cleto?',a:18,o:[12,18,24,6],h:'Triple de 6 🎮'},
+       {t:'Razonamiento',story:'Coqui reparte 24 naranjas en grupos de 4. ¿Cuántos grupos puede hacer?',q:'¿Cuántos grupos\npuede hacer?',a:6,o:[4,6,8,5],h:'24 ÷ 4 🍊'},
+       {t:'Razonamiento',story:'NOMBRE sigue el patrón ×2 desde 3: 3, 6, 12, 24... ¿Cuántos saltos para llegar al 48?',q:'¿Cuántos saltos\ndesde el 3?',a:4,o:[3,4,5,6],h:'3→6→12→24→48 🦘'}]}},
+   {name:'⚔️ Jefe Final: Coqui Cero',isBoss:true,tiers:{
+    1:[{t:'JEFE FINAL',q:'¿Qué sigue?\n2, 4, 6, 8, __',a:10,o:[9,10,11,12],h:'😈 Suma 2'},
+       {t:'JEFE FINAL',q:'__ + 3 = 8\n¿Qué va en __?',a:5,o:[4,5,6,11],h:'8 menos 3 🧠'},
+       {t:'JEFE FINAL',q:'El doble de 5\nes...',a:10,o:[8,10,12,5],h:'5 × 2 🔥'},
+       {t:'JEFE FINAL',q:'¿Qué sigue?\n5, 10, 15, 20, __',a:25,o:[22,25,30,20],h:'Suma 5 💪'},
+       {t:'JEFE FINAL',q:'3 × __ = 9\n¿Qué va en __?',a:3,o:[2,3,4,6],h:'¡El golpe final! 🏆'}],
+    2:[{t:'JEFE FINAL',q:'¿Qué sigue?\n3, 6, 12, 24, __',a:48,o:[30,36,48,40],h:'😈 ×2 cada vez'},
+       {t:'JEFE FINAL',q:'__ + 9 = 17\n¿Qué va en __?',a:8,o:[6,8,10,26],h:'17 menos 9 🧠'},
+       {t:'JEFE FINAL',q:'4 × __ = 20\n¿Qué va en __?',a:5,o:[4,5,6,8],h:'¿Cuántos 4 en 20? 🔥'},
+       {t:'JEFE FINAL',q:'¿Qué sigue?\n2, 5, 8, 11, __',a:14,o:[12,13,14,15],h:'Suma 3 💪'},
+       {t:'JEFE FINAL',q:'El doble de 9\nmás 3 es...',a:21,o:[18,21,24,15],h:'¡El golpe final! 🏆'}],
+    3:[{t:'JEFE FINAL',q:'¿Qué sigue?\n1, 1, 2, 3, 5, 8, __',a:13,o:[11,12,13,14],h:'😈 Suma los dos anteriores'},
+       {t:'JEFE FINAL',q:'__ ÷ 4 = 5\n¿Qué va en __?',a:20,o:[1,9,20,25],h:'5 × 4 🧠'},
+       {t:'JEFE FINAL',q:'El doble de 15\nmenos 8 es...',a:22,o:[7,22,30,38],h:'15×2=30, −8 🔥'},
+       {t:'JEFE FINAL',q:'¿Qué sigue?\n1, 4, 9, 16, __',a:25,o:[20,25,30,24],h:'Cuadrados perfectos 💪'},
+       {t:'JEFE FINAL',q:'5 × __ − 3 = 17\n¿Qué va en __?',a:4,o:[3,4,5,6],h:'¡El golpe final! 🏆'}]}}
+  ]}
 ];
 
-// ══════════════════════════════════════════
-//  ESTADO
-// ══════════════════════════════════════════
-let PLAYER_NAME = 'Gera';
+// ═══ ESTADO ═══
+let PLAYER_NAME='Gera';
+const TIER_LABELS={1:'🔵 Explorador',2:'🟡 Aventurero',3:'🟣 Maestro'};
+const TIER_CLS={1:'ts-1',2:'ts-2',3:'ts-3'};
 
-function loadState() {
-  const r = localStorage.getItem('gera_v3');
-  return r ? JSON.parse(r) : { coins:0, worlds:{}, freedSigns:[] };
+function loadState(){const r=localStorage.getItem('mat_v4');return r?JSON.parse(r):{coins:0,worlds:{},freedSigns:[],diagCompleted:false,diagResults:{},playerName:''};}
+function saveState(s){localStorage.setItem('mat_v4',JSON.stringify(s));}
+function getWS(s,wi){if(!s.worlds[wi])s.worlds[wi]={unlockedLevel:0,levelStars:{},bossBeaten:false,tierOverrides:{}};return s.worlds[wi];}
+function pn(t){return typeof t==='string'?t.replace(/NOMBRE/g,PLAYER_NAME):t;}
+
+function calcTier(wi){
+  const state=loadState();
+  if(!state.diagResults)return 1;
+  const topics=WORLDS[wi].diagTopics;
+  let tc=0,tt=0;
+  topics.forEach(tp=>{const r=state.diagResults[tp];if(r){tc+=r.correct;tt+=r.total;}});
+  if(tt===0){const all=Object.values(state.diagResults);const ac=all.reduce((a,b)=>a+(b.correct||0),0);const at=all.reduce((a,b)=>a+(b.total||0),0);if(at===0)return 1;const p=ac/at;return p>=.7?3:p>=.4?2:1;}
+  const p=tc/tt;return p>=.7?3:p>=.4?2:1;
 }
-function saveState(s) { localStorage.setItem('gera_v3', JSON.stringify(s)); }
-function getWS(s, wi) {
-  if (!s.worlds[wi]) s.worlds[wi] = { unlockedLevel:0, levelStars:{}, bossBeaten:false };
-  return s.worlds[wi];
-}
+function getEffectiveTier(wi,li){const state=loadState();const ws=getWS(state,wi);if(ws.tierOverrides&&ws.tierOverrides[li]!==undefined)return ws.tierOverrides[li];return calcTier(wi);}
+function saveTierOverride(wi,li,tier){const state=loadState();const ws=getWS(state,wi);if(!ws.tierOverrides)ws.tierOverrides={};ws.tierOverrides[li]=tier;saveState(state);}
 
-// reemplaza NOMBRE en textos
-function pn(txt) { return typeof txt === 'string' ? txt.replace(/NOMBRE/g, PLAYER_NAME) : txt; }
+// ═══ NAV ═══
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function goMap(){buildMap();showScreen('s-map');}
 
-// ══════════════════════════════════════════
-//  NAVEGACIÓN
-// ══════════════════════════════════════════
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-function goWelcome() { showScreen('s-nombre'); }
-function goMap()     { buildMap(); showScreen('s-map'); }
-
-// ══════════════════════════════════════════
-//  PANTALLA NOMBRE
-// ══════════════════════════════════════════
-function checkNombre() {
-  const v = document.getElementById('nombre-input').value.trim();
-  document.getElementById('btn-empezar').disabled = v.length < 2;
-}
-function irIntro() {
-  const v = document.getElementById('nombre-input').value.trim();
-  if (v.length < 2) return;
-  PLAYER_NAME = v;
-  // persist name
-  const state = loadState();
-  state.playerName = PLAYER_NAME;
-  saveState(state);
-
-  // render locked signs
-  const cont = document.getElementById('intro-signs-locked');
-  cont.innerHTML = '';
-  WORLD_SIGNS.forEach(world => world.forEach(s => {
-    const d = document.createElement('div');
-    d.className = 'sign-cage';
-    d.textContent = s.char;
-    cont.appendChild(d);
-  }));
-  document.getElementById('intro-name').textContent = PLAYER_NAME;
-  document.getElementById('intro-name2').textContent = PLAYER_NAME;
-  document.getElementById('map-title-txt').textContent = `🗺️ ${PLAYER_NAME}`;
-
-  // First time → mandatory diagnostic; show/hide adventure button accordingly
-  const diagDone = state.diagCompleted;
-  document.getElementById('btn-go-map').style.display    = diagDone ? 'inline-block' : 'none';
-  document.getElementById('btn-go-diag').textContent     = diagDone ? '📋 Repetir diagnóstico' : '📋 Hacer diagnóstico (obligatorio)';
-  document.getElementById('intro-diag-hint').style.display = diagDone ? 'none' : 'block';
+// ═══ NOMBRE ═══
+function checkNombre(){const v=document.getElementById('nombre-input').value.trim();document.getElementById('btn-empezar').disabled=v.length<2;}
+function irIntro(){
+  const v=document.getElementById('nombre-input').value.trim();if(v.length<2)return;
+  PLAYER_NAME=v;const state=loadState();state.playerName=PLAYER_NAME;saveState(state);
+  const cont=document.getElementById('intro-signs-locked');cont.innerHTML='';
+  WORLD_SIGNS.forEach(w=>w.forEach(s=>{const d=document.createElement('div');d.className='sign-cage';d.textContent=s.char;cont.appendChild(d);}));
+  document.getElementById('intro-name').textContent=PLAYER_NAME;
+  document.getElementById('intro-name2').textContent=PLAYER_NAME;
+  document.getElementById('map-title-txt').textContent=`🗺️ ${PLAYER_NAME}`;
+  const diagDone=state.diagCompleted;
+  document.getElementById('btn-go-map').style.display=diagDone?'inline-block':'none';
+  document.getElementById('btn-go-diag').textContent=diagDone?'📋 Repetir diagnóstico':'📋 Hacer diagnóstico (obligatorio)';
+  document.getElementById('intro-diag-hint').style.display=diagDone?'none':'block';
   showScreen('s-intro');
 }
 
-// ══════════════════════════════════════════
-//  MAPA
-// ══════════════════════════════════════════
-function buildMap() {
-  const state = loadState();
-  document.getElementById('coin-count').textContent = state.coins;
-  // mini signs bar
-  const bar = document.getElementById('map-signs-mini');
-  bar.innerHTML = '';
-  WORLD_SIGNS.forEach((ws,wi) => ws.forEach((s,li) => {
-    const key = `${wi}-${li}`;
-    const freed = state.freedSigns && state.freedSigns.includes(key);
-    const d = document.createElement('div');
-    d.className = 'sign-mini' + (freed ? ' freed' : '');
-    d.title = s.name;
-    d.textContent = freed ? s.char : '🔒';
-    bar.appendChild(d);
-  }));
-
-  const scroll = document.getElementById('map-scroll');
-  scroll.innerHTML = '';
-  WORLDS.forEach((world, wi) => {
-    const ws = getWS(state, wi);
-    const worldUnlocked = wi === 0 || getWS(state, wi-1).bossBeaten;
-
-    const card = document.createElement('div');
-    card.className = `world-card ${world.color}${worldUnlocked ? '' : ' locked'}`;
-
-    let dotsHTML = '';
-    world.levels.forEach((lvl, li) => {
-      const isBoss    = !!lvl.isBoss;
-      const isRazon   = !isBoss && lvl.name && lvl.name.includes('razonados');
-      const isUnlocked= worldUnlocked && li <= ws.unlockedLevel;
-      const isDone    = ws.levelStars[li] !== undefined;
-      const isCurrent = worldUnlocked && li === ws.unlockedLevel && !isDone;
-      let cls = 'lvl-dot';
-      if (isBoss)   cls += ' boss';
-      else if (isRazon) cls += ' razonado';
-      if (!isUnlocked) cls += ' locked';
-      else if (isDone) cls += ' done';
-      else if (isCurrent) cls += ' current';
-
-      const signKey = `${wi}-${li}`;
-      const freed = state.freedSigns && state.freedSigns.includes(signKey);
-      const signChar = freed ? WORLD_SIGNS[wi][li].char : '';
-      const label = isBoss ? '👿' : (isRazon ? '🧠' : (li+1));
-      const onclick = isUnlocked ? `startLevel(${wi},${li})` : '';
-      dotsHTML += `<div class="${cls}" onclick="${onclick}" title="${pn(lvl.name)}">${isDone ? '' : label}</div>${freed && !isBoss ? `<span class="sign-reward-dot" title="${WORLD_SIGNS[wi][li].name}">${signChar}</span>` : ''}`;
+// ═══ MAPA ═══
+function buildMap(){
+  const state=loadState();
+  document.getElementById('coin-count').textContent=state.coins;
+  const bar=document.getElementById('map-signs-mini');bar.innerHTML='';
+  WORLD_SIGNS.forEach((ws,wi)=>ws.forEach((s,li)=>{const key=`${wi}-${li}`;const freed=state.freedSigns&&state.freedSigns.includes(key);const d=document.createElement('div');d.className='sign-mini'+(freed?' freed':'');d.title=s.name;d.textContent=freed?s.char:'🔒';bar.appendChild(d);}));
+  const scroll=document.getElementById('map-scroll');scroll.innerHTML='';
+  WORLDS.forEach((world,wi)=>{
+    const ws=getWS(state,wi);const worldUnlocked=wi===0||getWS(state,wi-1).bossBeaten;
+    const tier=calcTier(wi);
+    const card=document.createElement('div');card.className=`world-card ${world.color}${worldUnlocked?'':' locked'}`;
+    let dots='';
+    world.levels.forEach((lvl,li)=>{
+      const isBoss=!!lvl.isBoss;const isRazon=!isBoss&&lvl.name&&lvl.name.includes('razonados');
+      const isUnlocked=worldUnlocked&&li<=ws.unlockedLevel;const isDone=ws.levelStars[li]!==undefined;
+      const isCurrent=worldUnlocked&&li===ws.unlockedLevel&&!isDone;
+      let cls='lvl-dot';if(isBoss)cls+=' boss';else if(isRazon)cls+=' razonado';
+      if(!isUnlocked)cls+=' locked';else if(isDone)cls+=' done';else if(isCurrent)cls+=' current';
+      const freed=state.freedSigns&&state.freedSigns.includes(`${wi}-${li}`);
+      const label=isBoss?'👿':(isRazon?'🧠':(li+1));
+      dots+=`<div class="${cls}" onclick="${isUnlocked?`startLevel(${wi},${li})`:''}" title="${pn(lvl.name)}">${isDone?'':label}</div>`;
+      if(freed&&!isBoss)dots+=`<span class="sign-reward-dot">${WORLD_SIGNS[wi][li].char}</span>`;
     });
-
-    const progressText = worldUnlocked
-      ? (ws.bossBeaten ? '✅ ¡Mundo conquistado!' : `Nivel ${Math.min(ws.unlockedLevel+1, world.levels.length)} de ${world.levels.length}`)
-      : '🔒 Termina el mundo anterior';
-
-    card.innerHTML = `
-      <div class="world-top">
-        <div class="world-emoji">${world.emoji}</div>
-        <div class="world-info">
-          <div class="world-name">${world.name}</div>
-          <div class="world-desc">${world.desc}</div>
-          <div class="world-progress">${progressText}</div>
-        </div>
-        ${!worldUnlocked ? '<div class="lock-icon">🔒</div>' : ''}
-      </div>
-      <div class="levels-row">${dotsHTML}</div>
-      ${ws.bossBeaten ? '<div class="world-complete-banner">🏆 ¡'+PLAYER_NAME+' conquistó este mundo!</div>' : ''}
-    `;
+    const prog=worldUnlocked?(ws.bossBeaten?'✅ ¡Mundo conquistado!':`Nivel ${Math.min(ws.unlockedLevel+1,world.levels.length)} de ${world.levels.length}`):'🔒 Termina el mundo anterior';
+    const badge=worldUnlocked&&state.diagCompleted?`<span class="tier-badge tier-${tier}">${TIER_LABELS[tier]}</span>`:'';
+    card.innerHTML=`<div class="world-top"><div class="world-emoji">${world.emoji}</div><div class="world-info"><div class="world-name">${world.name}</div><div class="world-desc">${world.desc}</div><div class="world-progress">${prog}</div>${badge}</div>${!worldUnlocked?'<div class="lock-icon">🔒</div>':''}</div><div class="levels-row">${dots}</div>${ws.bossBeaten?`<div class="world-complete-banner">🏆 ¡${PLAYER_NAME} conquistó este mundo!</div>`:''}`;
     scroll.appendChild(card);
   });
 }
 
-// ══════════════════════════════════════════
-//  JUEGO
-// ══════════════════════════════════════════
-let activeWi, activeLi, activeQs, activeQi, qScore, qHearts, qCorrect, qIsBoss;
-let pendingSignRescue = null; // {wi,li} after level
+// ═══ JUEGO ═══
+let activeWi,activeLi,activeQs,activeQi,qScore,qHearts,qCorrect,qIsBoss,activeTier;
 
-function getCelebrations() { return [
-  {t:`¡Increíble ${PLAYER_NAME}!`,   s:'¡Eso estuvo genial! 🔥'},
-  {t:'¡Cleto lo festeja!',            s:`¡${PLAYER_NAME} es un crack! 🏆`},
-  {t:'¡Boom! ¡Correcto!',             s:'¡Así se hace! ⚽'},
-  {t:'¡Wooooo!',                      s:'¡Cleto está muy feliz! 🦕'},
-  {t:'¡Perfecto!',                    s:`¡Lo sabías tú, ${PLAYER_NAME}! 🌟`},
+function getCelebrations(){return[
+  {t:`¡Increíble ${PLAYER_NAME}!`,s:'¡Eso estuvo genial! 🔥'},
+  {t:'¡Cleto lo festeja!',s:`¡${PLAYER_NAME} es un crack! 🏆`},
+  {t:'¡Boom! ¡Correcto!',s:'¡Así se hace! ⚽'},
+  {t:'¡Wooooo!',s:'¡Cleto está muy feliz! 🦕'},
+  {t:'¡Perfecto!',s:`¡Lo sabías tú, ${PLAYER_NAME}! 🌟`},
 ];}
-function getCeroFails() { return [
-  {t:'😂 ¡Jajaja! ¡Casi!',   s:`Pero casi no cuenta, ${PLAYER_NAME} 😜`},
-  {t:'🌙 ¡Fallaste!',         s:'¡Esta ronda es mía! 😈'},
-  {t:`😏 ¡Ay, ${PLAYER_NAME}!`, s:'La próxima vez... 😜'},
-  {t:'🌙 No te preocupes',    s:'¡Hasta los campeones fallan! 😂'},
+function getCeroFails(){return[
+  {t:'😂 ¡Jajaja! ¡Casi!',s:`Pero casi no cuenta, ${PLAYER_NAME} 😜`},
+  {t:'🌙 ¡Fallaste!',s:'¡Esta ronda es mía! 😈'},
+  {t:`😏 ¡Ay, ${PLAYER_NAME}!`,s:'La próxima vez... 😜'},
+  {t:'🌙 No te preocupes',s:'¡Hasta los campeones fallan! 😂'},
 ];}
 
-function startLevel(wi, li) {
-  const world = WORLDS[wi];
-  const level = world.levels[li];
-  activeWi = wi; activeLi = li;
-  qIsBoss = !!level.isBoss;
-
-  if (qIsBoss) {
-    document.getElementById('boss-taunt').textContent = pn(world.boss_taunt);
-    showScreen('s-boss-intro');
-    return;
-  }
-  // replace NOMBRE in questions
-  activeQs = level.questions.map(q => ({
-    ...q,
-    q: pn(q.q),
-    story: q.story ? pn(q.story) : undefined,
-  })).sort(() => Math.random()-.5);
-  activeQi = 0; qScore = 0; qHearts = world.hearts; qCorrect = 0;
-  document.getElementById('q-progress').className = 'progress-fill pf-normal';
-  showQuestion(); showScreen('s-question');
+function startLevel(wi,li){
+  const world=WORLDS[wi];const level=world.levels[li];
+  activeWi=wi;activeLi=li;qIsBoss=!!level.isBoss;
+  if(qIsBoss){document.getElementById('boss-taunt').textContent=pn(world.boss_taunt);showScreen('s-boss-intro');return;}
+  activeTier=getEffectiveTier(wi,li);
+  const pool=level.tiers[activeTier];
+  activeQs=[...pool].sort(()=>Math.random()-.5).map(q=>({...q,q:pn(q.q),story:q.story?pn(q.story):undefined}));
+  activeQi=0;qScore=0;qHearts=world.hearts;qCorrect=0;
+  document.getElementById('q-progress').className='progress-fill pf-normal';
+  updateTierStrip();showQuestion();showScreen('s-question');
 }
-
-function startBossBattle() {
-  const world = WORLDS[activeWi];
-  const level = world.levels[activeLi];
-  activeQs = level.questions.map(q => ({...q, q:pn(q.q)})).sort(() => Math.random()-.5);
-  activeQi = 0; qScore = 0; qHearts = world.hearts; qCorrect = 0;
-  document.getElementById('q-progress').className = 'progress-fill pf-boss';
-  showQuestion(); showScreen('s-question');
+function startBossBattle(){
+  const world=WORLDS[activeWi];const level=world.levels[activeLi];
+  activeTier=getEffectiveTier(activeWi,activeLi);
+  const pool=level.tiers[activeTier];
+  activeQs=[...pool].sort(()=>Math.random()-.5).map(q=>({...q,q:pn(q.q)}));
+  activeQi=0;qScore=0;qHearts=world.hearts;qCorrect=0;
+  document.getElementById('q-progress').className='progress-fill pf-boss';
+  updateTierStrip();showQuestion();showScreen('s-question');
 }
-
-function showQuestion() {
-  if (activeQi >= activeQs.length) { finishLevel(); return; }
-  const q = activeQs[activeQi];
-  const total = activeQs.length;
-
-  document.getElementById('q-counter').textContent = `${activeQi+1} / ${total}`;
-  document.getElementById('q-score').textContent = qScore;
-  document.getElementById('q-progress').style.width = (activeQi/total*100)+'%';
-  let hearts=''; for(let i=0;i<3;i++) hearts += i<qHearts?'❤️':'🖤';
-  document.getElementById('q-hearts').textContent = hearts;
-
-  const card   = document.getElementById('q-card');
-  const bubble = document.getElementById('q-bubble');
-  const pill   = document.getElementById('q-topic');
-  if (qIsBoss) {
-    card.classList.add('boss-mode'); bubble.classList.add('villain');
-    document.getElementById('q-guide-img').src = 'CoquiCero.png';
-    pill.className = 'topic-pill tp-boss';
-  } else {
-    card.classList.remove('boss-mode'); bubble.className = 'guide-bubble';
-    document.getElementById('q-guide-img').src = 'CoquiMat.png';
-    pill.className = 'topic-pill tp-normal';
-  }
-  document.getElementById('q-guide-msg').textContent = q.h;
-  pill.textContent = q.t;
-  document.getElementById('q-text').textContent = q.q;
-
-  const sb = document.getElementById('q-story');
-  if (q.story) {
-    document.getElementById('q-story-text').textContent = q.story;
-    sb.className = 'story-bubble active';
-  } else { sb.className = 'story-bubble'; }
-
-  const opts = document.getElementById('q-opts');
-  opts.innerHTML = '';
-  [...q.o].sort(() => Math.random()-.5).forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn';
-    btn.textContent = opt;
-    btn.onclick = () => checkAnswer(opt, q.a);
-    opts.appendChild(btn);
+function updateTierStrip(){
+  const s=document.getElementById('tier-strip');
+  s.textContent=TIER_LABELS[activeTier];s.className=`tier-strip ${TIER_CLS[activeTier]}`;
+}
+function showQuestion(){
+  if(activeQi>=activeQs.length){finishLevel();return;}
+  const q=activeQs[activeQi];const total=activeQs.length;
+  document.getElementById('q-counter').textContent=`${activeQi+1} / ${total}`;
+  document.getElementById('q-score').textContent=qScore;
+  document.getElementById('q-progress').style.width=(activeQi/total*100)+'%';
+  let h='';for(let i=0;i<3;i++)h+=i<qHearts?'❤️':'🖤';
+  document.getElementById('q-hearts').textContent=h;
+  const card=document.getElementById('q-card');const bubble=document.getElementById('q-bubble');const pill=document.getElementById('q-topic');
+  if(qIsBoss){card.classList.add('boss-mode');bubble.classList.add('villain');document.getElementById('q-guide-img').src='CoquiCero.png';pill.className='topic-pill tp-boss';}
+  else{card.classList.remove('boss-mode');bubble.className='guide-bubble';document.getElementById('q-guide-img').src='CoquiMat.png';pill.className='topic-pill tp-normal';}
+  document.getElementById('q-guide-msg').textContent=q.h;pill.textContent=q.t;
+  document.getElementById('q-text').textContent=q.q;
+  const sb=document.getElementById('q-story');
+  if(q.story){document.getElementById('q-story-text').textContent=q.story;sb.className='story-bubble active';}
+  else sb.className='story-bubble';
+  const opts=document.getElementById('q-opts');opts.innerHTML='';
+  [...q.o].sort(()=>Math.random()-.5).forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt;
+    btn.onclick=()=>checkAnswer(opt,q.a);opts.appendChild(btn);
   });
 }
-
-function checkAnswer(sel, correct) {
-  document.querySelectorAll('.opt-btn').forEach(b => b.onclick = null);
-  const ok = String(sel) === String(correct);
-  document.querySelectorAll('.opt-btn').forEach(b => {
-    if (String(b.textContent) === String(correct)) b.classList.add('correct');
-    if (String(b.textContent) === String(sel) && !ok) b.classList.add('wrong');
+function checkAnswer(sel,correct){
+  document.querySelectorAll('.opt-btn').forEach(b=>b.onclick=null);
+  const ok=String(sel)===String(correct);
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    if(String(b.textContent)===String(correct))b.classList.add('correct');
+    if(String(b.textContent)===String(sel)&&!ok)b.classList.add('wrong');
   });
-  if (ok) { qScore++; qCorrect++; setTimeout(showCletoOv, 350); }
-  else    { qHearts = Math.max(0, qHearts-1); setTimeout(showCeroFail, 500); }
+  if(ok){qScore++;qCorrect++;setTimeout(showCletoOv,350);}
+  else{qHearts=Math.max(0,qHearts-1);setTimeout(showCeroFail,500);}
 }
-
-function showCletoOv() {
-  const CELEBRATIONS = getCelebrations();
-  const m = CELEBRATIONS[Math.floor(Math.random()*CELEBRATIONS.length)];
-  document.getElementById('ov-cel-text').textContent = m.t;
-  document.getElementById('ov-cel-sub').textContent  = m.s;
+function showCletoOv(){
+  const C=getCelebrations();const m=C[Math.floor(Math.random()*C.length)];
+  document.getElementById('ov-cel-text').textContent=m.t;document.getElementById('ov-cel-sub').textContent=m.s;
   document.getElementById('ov-cleto').classList.add('active');
-  setTimeout(() => { document.getElementById('ov-cleto').classList.remove('active'); activeQi++; showQuestion(); }, 1500);
+  setTimeout(()=>{document.getElementById('ov-cleto').classList.remove('active');activeQi++;showQuestion();},1500);
 }
-
-function showCeroFail() {
-  const CERO_FAILS = getCeroFails();
-  const m = CERO_FAILS[Math.floor(Math.random()*CERO_FAILS.length)];
-  document.getElementById('ov-cero-text').textContent = m.t;
-  document.getElementById('ov-cero-sub').textContent  = m.s;
-  const btn = document.getElementById('ov-cero-btn');
-  btn.onclick = () => {
-    document.getElementById('ov-cero').classList.remove('active');
-    activeQi++;
-    if (qHearts <= 0) finishLevel();
-    else showQuestion();
-  };
+function showCeroFail(){
+  const C=getCeroFails();const m=C[Math.floor(Math.random()*C.length)];
+  document.getElementById('ov-cero-text').textContent=m.t;document.getElementById('ov-cero-sub').textContent=m.s;
+  const btn=document.getElementById('ov-cero-btn');
+  btn.onclick=()=>{document.getElementById('ov-cero').classList.remove('active');activeQi++;if(qHearts<=0)finishLevel();else showQuestion();};
   document.getElementById('ov-cero').classList.add('active');
 }
 
-// ══════════════════════════════════════════
-//  FIN DE NIVEL
-// ══════════════════════════════════════════
-function finishLevel() {
-  const total = activeQs.length;
-  const pct   = qCorrect / total;
-  const stars = pct >= .8 ? 3 : pct >= .5 ? 2 : 1;
-  const coinsEarned = stars*10 + (qIsBoss ? 30 : 0);
-
-  const state = loadState();
-  const ws = getWS(state, activeWi);
-  ws.levelStars[activeLi] = stars;
-  if (qIsBoss) ws.bossBeaten = true;
-  else ws.unlockedLevel = Math.max(ws.unlockedLevel, activeLi+1);
-  state.coins = (state.coins||0) + coinsEarned;
-
-  // Liberar signo
-  const signKey = `${activeWi}-${activeLi}`;
-  if (!state.freedSigns) state.freedSigns = [];
-  if (!state.freedSigns.includes(signKey)) state.freedSigns.push(signKey);
+// ═══ FIN DE NIVEL ═══
+function finishLevel(){
+  const total=activeQs.length;const pct=qCorrect/total;
+  const stars=pct>=.8?3:pct>=.5?2:1;const coins=stars*10+(qIsBoss?30:0);
+  const state=loadState();const ws=getWS(state,activeWi);
+  ws.levelStars[activeLi]=stars;
+  if(qIsBoss)ws.bossBeaten=true;
+  else ws.unlockedLevel=Math.max(ws.unlockedLevel,activeLi+1);
+  state.coins=(state.coins||0)+coins;
+  let tieredUp=false;
+  if(!qIsBoss&&stars===3&&activeTier<3){saveTierOverride(activeWi,activeLi+1,activeTier+1);tieredUp=true;}
+  const signKey=`${activeWi}-${activeLi}`;
+  if(!state.freedSigns)state.freedSigns=[];
+  if(!state.freedSigns.includes(signKey))state.freedSigns.push(signKey);
   saveState(state);
-
-  // Mostrar pantalla de rescate de signo PRIMERO
-  pendingSignRescue = { wi:activeWi, li:activeLi, stars, coinsEarned, isBoss:qIsBoss, total };
-  showRescueOverlay(activeWi, activeLi, () => {
-    // después del rescate, mostrar nivel/boss done
-    showLevelDone(stars, coinsEarned, qIsBoss, total);
+  showRescueOverlay(activeWi,activeLi,()=>{
+    if(tieredUp&&!qIsBoss)showTierUp(activeTier+1,()=>showLevelDone(stars,coins,qIsBoss,total,true));
+    else showLevelDone(stars,coins,qIsBoss,total,false);
   });
 }
-
-function showRescueOverlay(wi, li, cb) {
-  const sign = WORLD_SIGNS[wi][li];
-  document.getElementById('rescue-sign-char').textContent = sign.char;
-  document.getElementById('rescue-title').textContent = `¡Rescataste ${sign.name}!`;
-  document.getElementById('rescue-desc').textContent  = sign.desc;
+function showRescueOverlay(wi,li,cb){
+  const sign=WORLD_SIGNS[wi][li];
+  document.getElementById('rescue-sign-char').textContent=sign.char;
+  document.getElementById('rescue-title').textContent=`¡Rescataste ${sign.name}!`;
+  document.getElementById('rescue-desc').textContent=sign.desc;
   document.getElementById('ov-rescue').classList.add('active');
-  document.getElementById('rescue-ok-btn').onclick = () => {
-    document.getElementById('ov-rescue').classList.remove('active');
-    cb();
-  };
+  document.getElementById('rescue-ok-btn').onclick=()=>{document.getElementById('ov-rescue').classList.remove('active');cb();};
 }
+let tierUpCb=null;
+function showTierUp(newTier,cb){
+  tierUpCb=cb;
+  const icons={2:'🟡',3:'🟣'};
+  const msgs={2:`¡Tus respuestas fueron perfectas!\nEl siguiente nivel será más desafiante 💪`,3:`¡Llegaste al nivel Maestro!\n¡Eres increíble, ${PLAYER_NAME}! 🌟`};
+  document.getElementById('tier-up-sign').textContent=icons[newTier];
+  document.getElementById('tier-up-title').textContent=`¡Subiste a ${TIER_LABELS[newTier]}!`;
+  document.getElementById('tier-up-sub').textContent=msgs[newTier];
+  document.getElementById('ov-tier-up').classList.add('active');
+}
+function closeTierUp(){document.getElementById('ov-tier-up').classList.remove('active');if(tierUpCb){tierUpCb();tierUpCb=null;}}
 
-function showLevelDone(stars, coins, isBoss, total) {
-  if (isBoss) {
-    // Check if all worlds done → victoria final
-    const state = loadState();
-    const allDone = WORLDS.every((w,wi) => getWS(state,wi).bossBeaten);
-    if (allDone) { setTimeout(showVictoria, 400); return; }
-
-    document.getElementById('bw-world').textContent = `¡Has conquistado ${WORLDS[activeWi].name}!`;
-    document.getElementById('bw-stats').innerHTML = `
+function showLevelDone(stars,coins,isBoss,total,tieredUp){
+  if(isBoss){
+    const state=loadState();
+    if(WORLDS.every((w,wi)=>getWS(state,wi).bossBeaten)){setTimeout(showVictoria,400);return;}
+    document.getElementById('bw-world').textContent=`¡Has conquistado ${WORLDS[activeWi].name}!`;
+    document.getElementById('bw-stats').innerHTML=`
       <div class="bw-stat"><span>Respuestas correctas</span><span class="bw-val">${qCorrect} / ${total}</span></div>
+      <div class="bw-stat"><span>Nivel de dificultad</span><span class="bw-val">${TIER_LABELS[activeTier]}</span></div>
       <div class="bw-stat"><span>Estrellas</span><span class="bw-val">${'⭐'.repeat(stars)}</span></div>
-      <div class="bw-stat"><span>Monedas ganadas</span><span class="bw-val">+${coins} 🪙</span></div>
-    `;
+      <div class="bw-stat"><span>Monedas ganadas</span><span class="bw-val">+${coins} 🪙</span></div>`;
     showScreen('s-boss-win');
   } else {
-    const msgs = [
-      {e:'🎉', t:'¡Nivel superado!',         s:`¡${PLAYER_NAME}, eres imparable! 🔥`},
-      {e:'🌟', t:`¡Increíble ${PLAYER_NAME}!`, s:'¡Cleto está bailando! 🦕'},
-      {e:'🏆', t:'¡Lo lograste!',             s:`¡${PLAYER_NAME} es un crack! ⚽`},
+    const msgs=[
+      {e:'🎉',t:'¡Nivel superado!',s:`¡${PLAYER_NAME}, eres imparable! 🔥`},
+      {e:'🌟',t:`¡Increíble ${PLAYER_NAME}!`,s:'¡Cleto está bailando! 🦕'},
+      {e:'🏆',t:'¡Lo lograste!',s:`¡${PLAYER_NAME} es un crack! ⚽`},
     ];
-    const m = msgs[Math.floor(Math.random()*msgs.length)];
-    document.getElementById('ld-emoji').textContent = m.e;
-    document.getElementById('ld-title').textContent = m.t;
-    document.getElementById('ld-sub').textContent   = m.s;
-    document.getElementById('ld-stars').textContent = '⭐'.repeat(stars)+'🌑'.repeat(3-stars);
-    document.getElementById('ld-coins').textContent = `+${coins} 🪙`;
+    const m=msgs[Math.floor(Math.random()*msgs.length)];
+    document.getElementById('ld-emoji').textContent=m.e;
+    document.getElementById('ld-title').textContent=m.t;
+    document.getElementById('ld-sub').textContent=m.s;
+    document.getElementById('ld-stars').textContent='⭐'.repeat(stars)+'🌑'.repeat(3-stars);
+    document.getElementById('ld-coins').textContent=`+${coins} 🪙`;
+    document.getElementById('ld-tier-note').textContent=tieredUp?`🚀 ¡Subiste a ${TIER_LABELS[activeTier+1]}! Siguiente nivel más desafiante`:'';
     showScreen('s-level-done');
   }
 }
+function afterLevel(){goMap();}
+function afterBossWin(){goMap();}
 
-function afterLevel()   { goMap(); }
-function afterBossWin() { goMap(); }
-
-// ══════════════════════════════════════════
-//  VICTORIA FINAL
-// ══════════════════════════════════════════
-function showVictoria() {
-  const state = loadState();
-  document.getElementById('vic-title').textContent = `¡Lo lograste, ${PLAYER_NAME}!`;
-  document.getElementById('vic-sub').textContent   = `¡Rescataste todos los signos matemáticos del reino y derrotaste a Coqui Cero para siempre! 🦸`;
-  document.getElementById('vic-coins').textContent = `Total de monedas: ${state.coins} 🪙`;
-
-  const gallery = document.getElementById('signs-gallery');
-  gallery.innerHTML = '';
-  WORLD_SIGNS.forEach((ws,wi) => ws.forEach((s,li) => {
-    const div = document.createElement('div');
-    div.className = 'sign-freed';
-    div.style.animationDelay = `${(wi*5+li)*0.1}s`;
-    div.textContent = s.char;
-    div.title = s.name;
-    gallery.appendChild(div);
+// ═══ VICTORIA ═══
+function showVictoria(){
+  const state=loadState();
+  document.getElementById('vic-title').textContent=`¡Lo lograste, ${PLAYER_NAME}!`;
+  document.getElementById('vic-sub').textContent=`¡Rescataste todos los signos matemáticos del reino y derrotaste a Coqui Cero para siempre! 🦸`;
+  document.getElementById('vic-coins').textContent=`Total de monedas: ${state.coins} 🪙`;
+  const gallery=document.getElementById('signs-gallery');gallery.innerHTML='';
+  WORLD_SIGNS.forEach((ws,wi)=>ws.forEach((s,li)=>{
+    const d=document.createElement('div');d.className='sign-freed';
+    d.style.animationDelay=`${(wi*5+li)*0.1}s`;d.textContent=s.char;d.title=s.name;gallery.appendChild(d);
   }));
   showScreen('s-victoria');
 }
 
-// ══════════════════════════════════════════
-//  DIAGNÓSTICO — calibrado para 7 años
-//  Bloque A (ya sabe):    sumas/restas hasta 10
-//  Bloque B (aprendiendo): sumas hasta 20, grupos, mitades simples
-//  Bloque C (lo que viene): fracciones simples, patrones, figuras
-// ══════════════════════════════════════════
-const DIAG_QS = [
-  // ── Bloque A: Lo que ya debería saber ──
-  {topic:'Sumas',    text:'¿Cuánto es\n3 + 4?',
-   answer:7,   options:[5,6,7,8],     coqui:'Tres más cuatro 🔢',   bloque:'A'},
-  {topic:'Restas',   text:'¿Cuánto es\n8 − 3?',
-   answer:5,   options:[4,5,6,3],     coqui:'Ocho menos tres ✂️',    bloque:'A'},
-  {topic:'Sumas',    text:'¿Cuánto es\n5 + 5?',
-   answer:10,  options:[8,9,10,11],   coqui:'¡El 10 mágico! 🎯',    bloque:'A'},
-  {topic:'Comparar', text:'¿Cuál número\nes más grande?\n7 o 4',
-   answer:7,   options:[4,5,7,9],     coqui:'¿Cuál es mayor? 🔍',   bloque:'A'},
-  {topic:'Restas',   text:'¿Cuánto es\n9 − 5?',
-   answer:4,   options:[3,4,5,6],     coqui:'Nueve menos cinco',     bloque:'A'},
-
-  // ── Bloque B: Lo que está aprendiendo ──
-  {topic:'Sumas',    text:'¿Cuánto es\n8 + 6?',
-   answer:14,  options:[12,13,14,15], coqui:'¡Cuenta desde el 8! 🤚', bloque:'B'},
-  {topic:'Grupos',   text:'¿Cuánto es\n2 grupos de 4?',
-   answer:8,   options:[6,7,8,10],   coqui:'Dos grupos de cuatro 🎯', bloque:'B'},
-  {topic:'Restas',   text:'¿Cuánto es\n12 − 4?',
-   answer:8,   options:[7,8,9,6],    coqui:'Doce menos cuatro',      bloque:'B'},
-  {topic:'Mitad',    text:'¿Cuánto es la\nmitad de 8?',
-   answer:4,   options:[2,3,4,5],    coqui:'8 entre 2 ✂️',           bloque:'B'},
-  {topic:'Grupos',   text:'¿Cuánto es\n3 grupos de 3?',
-   answer:9,   options:[6,9,12,8],   coqui:'Tres grupos de tres',    bloque:'B'},
-
-  // ── Bloque C: Lo que viene después ──
-  {topic:'Mitad',    text:'¿Cuánto es la\nmitad de 16?',
-   answer:8,   options:[6,7,8,9],    coqui:'16 entre 2',             bloque:'C'},
-  {topic:'Figuras',  text:'¿Cuántos lados\ntiene un triángulo?',
-   answer:3,   options:[2,3,4,5],    coqui:'Tri = 3 📐',             bloque:'C'},
-  {topic:'Patrones', text:'¿Qué sigue?\n2, 4, 6, 8, __',
-   answer:10,  options:[9,10,11,12], coqui:'Suma 2 cada vez 🔢',     bloque:'C'},
-  {topic:'Figuras',  text:'¿Cuántos lados\ntiene un cuadrado?',
-   answer:4,   options:[3,4,5,6],    coqui:'¡Cuatro lados iguales!', bloque:'C'},
-  {topic:'Patrones', text:'¿Qué sigue?\n5, 10, 15, 20, __',
-   answer:25,  options:[22,25,30,20],coqui:'¡Tabla del 5! 🔢',       bloque:'C'},
+// ═══ DIAGNÓSTICO ═══
+const DIAG_QS=[
+  {topic:'Sumas',    text:'¿Cuánto es\n3 + 4?',    answer:7,  options:[5,6,7,8],     coqui:'Tres más cuatro 🔢',   bloque:'A'},
+  {topic:'Restas',   text:'¿Cuánto es\n8 − 3?',    answer:5,  options:[4,5,6,3],     coqui:'Ocho menos tres ✂️',    bloque:'A'},
+  {topic:'Sumas',    text:'¿Cuánto es\n5 + 5?',    answer:10, options:[8,9,10,11],   coqui:'¡El 10 mágico! 🎯',    bloque:'A'},
+  {topic:'Comparar', text:'¿Cuál número\nes más grande?\n7 o 4', answer:7, options:[4,5,7,9], coqui:'¿Cuál es mayor? 🔍', bloque:'A'},
+  {topic:'Restas',   text:'¿Cuánto es\n9 − 5?',    answer:4,  options:[3,4,5,6],     coqui:'Nueve menos cinco',     bloque:'A'},
+  {topic:'Sumas',    text:'¿Cuánto es\n8 + 6?',    answer:14, options:[12,13,14,15], coqui:'¡Cuenta desde el 8! 🤚', bloque:'B'},
+  {topic:'Grupos',   text:'¿Cuánto es\n2 grupos de 4?', answer:8, options:[6,7,8,10], coqui:'Dos grupos de cuatro 🎯', bloque:'B'},
+  {topic:'Restas',   text:'¿Cuánto es\n12 − 4?',   answer:8,  options:[7,8,9,6],     coqui:'Doce menos cuatro',      bloque:'B'},
+  {topic:'Mitad',    text:'¿Cuánto es la\nmitad de 8?', answer:4, options:[2,3,4,5], coqui:'8 entre 2 ✂️',           bloque:'B'},
+  {topic:'Grupos',   text:'¿Cuánto es\n3 grupos de 3?', answer:9, options:[6,9,12,8], coqui:'Tres grupos de tres', bloque:'B'},
+  {topic:'Mitad',    text:'¿Cuánto es la\nmitad de 16?', answer:8, options:[6,7,8,9], coqui:'16 entre 2',           bloque:'C'},
+  {topic:'Figuras',  text:'¿Cuántos lados\ntiene un triángulo?', answer:3, options:[2,3,4,5], coqui:'Tri = 3 📐', bloque:'C'},
+  {topic:'Patrones', text:'¿Qué sigue?\n2, 4, 6, 8, __', answer:10, options:[9,10,11,12], coqui:'Suma 2 🔢', bloque:'C'},
+  {topic:'Figuras',  text:'¿Cuántos lados\ntiene un cuadrado?', answer:4, options:[3,4,5,6], coqui:'¡Cuatro lados!', bloque:'C'},
+  {topic:'Patrones', text:'¿Qué sigue?\n5, 10, 15, 20, __', answer:25, options:[22,25,30,20], coqui:'¡Tabla del 5! 🔢', bloque:'C'},
 ];
-let diagOrder = [], diagIdx = 0, diagScore = 0;
-let diagResults = {}; // topic → {correct, total, bloque}
+let diagOrder=[],diagIdx=0,diagScore=0,diagResults={};
 
-function startDiagnostic() {
-  diagOrder = [...DIAG_QS]; // keep order (A→B→C, no shuffle)
-  diagIdx = 0; diagScore = 0; diagResults = {};
-  DIAG_QS.forEach(q => { diagResults[q.topic] = diagResults[q.topic] || {correct:0,total:0,bloque:q.bloque}; });
-  showDiagQ(); showScreen('s-diag-q');
+function startDiagnostic(){
+  diagOrder=[...DIAG_QS];diagIdx=0;diagScore=0;diagResults={};
+  DIAG_QS.forEach(q=>{if(!diagResults[q.topic])diagResults[q.topic]={correct:0,total:0,bloque:q.bloque};});
+  showDiagQ();showScreen('s-diag-q');
 }
-function showDiagQ() {
-  if (diagIdx >= diagOrder.length) { finishDiag(); return; }
-  const q = diagOrder[diagIdx];
-  document.getElementById('dq-counter').textContent = `${diagIdx+1} / ${diagOrder.length}`;
-  document.getElementById('dq-score').textContent = diagScore;
-  document.getElementById('dq-progress').style.width = (diagIdx/diagOrder.length*100)+'%';
-  document.getElementById('dq-guide-msg').textContent = q.coqui;
-  document.getElementById('dq-topic').textContent = q.topic;
-  document.getElementById('dq-text').textContent  = q.text;
-  // Bloque label
-  const bloqueLabels = {A:'⭐ Ya sé', B:'🌟 Aprendiendo', C:'🚀 Lo que viene'};
-  document.getElementById('dq-bloque').textContent = bloqueLabels[q.bloque] || '';
-  const opts = document.getElementById('dq-opts');
-  opts.innerHTML = '';
-  [...q.options].sort(() => Math.random()-.5).forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn';
-    btn.textContent = opt;
-    btn.onclick = () => {
-      document.querySelectorAll('#dq-opts .opt-btn').forEach(b => b.onclick=null);
-      const ok = String(opt) === String(q.answer);
-      document.querySelectorAll('#dq-opts .opt-btn').forEach(b => {
-        if (String(b.textContent)===String(q.answer)) b.classList.add('correct');
-        if (String(b.textContent)===String(opt)&&!ok) b.classList.add('wrong');
+function showDiagQ(){
+  if(diagIdx>=diagOrder.length){finishDiag();return;}
+  const q=diagOrder[diagIdx];
+  document.getElementById('dq-counter').textContent=`${diagIdx+1} / ${diagOrder.length}`;
+  document.getElementById('dq-score').textContent=diagScore;
+  document.getElementById('dq-progress').style.width=(diagIdx/diagOrder.length*100)+'%';
+  document.getElementById('dq-guide-msg').textContent=q.coqui;
+  document.getElementById('dq-topic').textContent=q.topic;
+  document.getElementById('dq-text').textContent=q.text;
+  const bl={A:'⭐ Bloque A',B:'🌟 Bloque B',C:'🚀 Bloque C'};
+  document.getElementById('dq-bloque').textContent=bl[q.bloque]||'';
+  const opts=document.getElementById('dq-opts');opts.innerHTML='';
+  [...q.options].sort(()=>Math.random()-.5).forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt;
+    btn.onclick=()=>{
+      document.querySelectorAll('#dq-opts .opt-btn').forEach(b=>b.onclick=null);
+      const ok=String(opt)===String(q.answer);
+      document.querySelectorAll('#dq-opts .opt-btn').forEach(b=>{
+        if(String(b.textContent)===String(q.answer))b.classList.add('correct');
+        if(String(b.textContent)===String(opt)&&!ok)b.classList.add('wrong');
       });
-      if (!diagResults[q.topic]) diagResults[q.topic] = {correct:0,total:0,bloque:q.bloque};
-      diagResults[q.topic].total++;
-      if (ok) { diagScore++; diagResults[q.topic].correct++; }
-      setTimeout(() => { diagIdx++; showDiagQ(); }, ok ? 800 : 1100);
+      if(!diagResults[q.topic])diagResults[q.topic]={correct:0,total:0,bloque:q.bloque};
+      diagResults[q.topic].total++;if(ok){diagScore++;diagResults[q.topic].correct++;}
+      setTimeout(()=>{diagIdx++;showDiagQ();},ok?800:1100);
     };
     opts.appendChild(btn);
   });
 }
-function finishDiag() {
-  // Save flag + results
-  const state = loadState();
-  state.diagCompleted = true;
-  state.diagResults = diagResults;
-  state.diagScore = diagScore;
-  saveState(state);
-
-  // Build results card in diag screen
-  const pct = diagScore / diagOrder.length;
-  const emoji = pct >= .8 ? '🏆' : pct >= .5 ? '🌟' : '🚀';
-  const msg   = pct >= .8
-    ? `¡${PLAYER_NAME} ya sabe muchísimo! ¡La aventura será emocionante!`
-    : pct >= .5
-    ? `¡${PLAYER_NAME} va muy bien! Hay cositas por aprender, ¡y lo va a lograr!`
-    : `¡${PLAYER_NAME} está empezando su aventura! ¡Vamos paso a paso!`;
-
-  // Show results inline in diag screen
-  const card = document.getElementById('dq-card');
-  card.innerHTML = `
-    <div style="text-align:center;padding:10px 0">
-      <div style="font-size:3rem;margin-bottom:8px">${emoji}</div>
-      <div style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--gold);margin-bottom:6px">¡Diagnóstico listo!</div>
-      <div style="font-size:.9rem;opacity:.8;margin-bottom:18px;line-height:1.5">${msg}</div>
-      <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;margin-bottom:14px">
-        ${diagScore} / ${diagOrder.length} correctas ⭐
-      </div>
-      <div style="text-align:left;background:rgba(255,255,255,.06);border-radius:14px;padding:12px;margin-bottom:18px;font-size:.82rem">
-        ${Object.entries(diagResults).map(([topic,d]) => {
-          const p = d.total > 0 ? Math.round(d.correct/d.total*100) : 0;
-          const bar = p>=80?'✅':p>=50?'⚠️':'❌';
-          return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.07)"><span>${topic}</span><span>${bar} ${p}%</span></div>`;
-        }).join('')}
-      </div>
-      <button class="btn-main" style="font-size:1rem;padding:12px 32px" onclick="goMap()">¡Al mapa de aventura! 🗺️</button>
+function finishDiag(){
+  const state=loadState();state.diagCompleted=true;state.diagResults=diagResults;state.diagScore=diagScore;saveState(state);
+  const pct=diagScore/diagOrder.length;
+  const emoji=pct>=.8?'🏆':pct>=.5?'🌟':'🚀';
+  const msg=pct>=.8?`¡${PLAYER_NAME} ya sabe muchísimo! Los mundos estarán en el nivel más alto.`:pct>=.5?`¡${PLAYER_NAME} va muy bien! Los mundos se ajustaron a su ritmo.`:`¡${PLAYER_NAME} está comenzando! Los mundos empezarán con lo más fácil.`;
+  const worldTiers=WORLDS.map((w,wi)=>{const t=calcTier(wi);return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.07)"><span>${w.name.split(':')[1]}</span><span class="${TIER_CLS[t]}">${TIER_LABELS[t]}</span></div>`;}).join('');
+  document.getElementById('dq-card').innerHTML=`<div style="text-align:center;padding:10px 0">
+    <div style="font-size:3rem;margin-bottom:8px">${emoji}</div>
+    <div style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--gold);margin-bottom:6px">¡Diagnóstico listo!</div>
+    <div style="font-size:.88rem;opacity:.82;margin-bottom:16px;line-height:1.5">${msg}</div>
+    <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;margin-bottom:14px">${diagScore} / ${diagOrder.length} ⭐</div>
+    <div style="text-align:left;background:rgba(255,255,255,.06);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:.82rem">
+      <div style="font-weight:700;color:var(--blue);margin-bottom:8px;font-size:.75rem;text-transform:uppercase;">Nivel asignado por mundo:</div>
+      ${worldTiers}
     </div>
-  `;
-  document.getElementById('dq-counter').textContent = '¡Listo!';
-  document.getElementById('dq-progress').style.width = '100%';
-  // Unlock map button in intro
-  document.getElementById('btn-go-map').style.display = 'inline-block';
-  document.getElementById('intro-diag-hint').style.display = 'none';
+    <button class="btn-main" style="font-size:1rem;padding:12px 32px" onclick="afterDiag()">¡Al mapa de aventura! 🗺️</button>
+  </div>`;
+  document.getElementById('dq-counter').textContent='¡Listo!';
+  document.getElementById('dq-progress').style.width='100%';
+  document.getElementById('btn-go-map').style.display='inline-block';
+  document.getElementById('intro-diag-hint').style.display='none';
 }
+function afterDiag(){document.getElementById('btn-go-diag').textContent='📋 Repetir diagnóstico';goMap();}
 
-
-// Restore saved player name if returning user
-(function() {
-  const state = loadState();
-  if (state.playerName) {
-    PLAYER_NAME = state.playerName;
-    document.getElementById('nombre-input').value = PLAYER_NAME;
-    document.getElementById('btn-empezar').disabled = false;
-    document.getElementById('map-title-txt').textContent = `🗺️ ${PLAYER_NAME}`;
-  }
+// ═══ INIT ═══
+(function(){
+  const state=loadState();
+  if(state.playerName){PLAYER_NAME=state.playerName;document.getElementById('nombre-input').value=PLAYER_NAME;document.getElementById('btn-empezar').disabled=false;document.getElementById('map-title-txt').textContent=`🗺️ ${PLAYER_NAME}`;}
 })();
-// ══════════════════════════════════════════
-const sf = document.getElementById('starfield');
-for (let i=0;i<90;i++) {
-  const s = document.createElement('div');
-  s.className='star';
-  const sz=Math.random()*3+1, dur=1.2+Math.random()*2.5;
-  s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${dur}s;animation-delay:${Math.random()*3}s;`;
-  sf.appendChild(s);
-}
+
+// ═══ ESTRELLAS ═══
+const sf=document.getElementById('starfield');
+for(let i=0;i<90;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*3+1,dur=1.2+Math.random()*2.5;s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${dur}s;animation-delay:${Math.random()*3}s;`;sf.appendChild(s);}
 </script>
 </body>
 </html>
