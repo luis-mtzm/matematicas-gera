@@ -22,6 +22,9 @@
     @keyframes signRescue{0%{transform:scale(0) rotate(-20deg);opacity:0}60%{transform:scale(1.3) rotate(5deg);opacity:1}80%{transform:scale(.95)}100%{transform:scale(1) rotate(0);opacity:1}}
     @keyframes glow{0%,100%{text-shadow:0 0 10px var(--gold),0 0 20px var(--gold)}50%{text-shadow:0 0 30px var(--gold),0 0 60px rgba(255,215,0,.5)}}
     @keyframes tierUp{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+    @keyframes letterReveal{0%{transform:scale(0) rotate(-15deg);opacity:0}60%{transform:scale(1.2) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+    @keyframes calcFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-12px) rotate(1deg)}}
+    @keyframes calcGlow{0%,100%{filter:drop-shadow(0 0 12px rgba(255,215,0,.6))}50%{filter:drop-shadow(0 0 30px rgba(255,215,0,1)) drop-shadow(0 0 60px rgba(255,215,0,.4))}}
     .screen{display:none;position:relative;z-index:1;min-height:100vh;}
     .screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
     #s-nombre{text-align:center;}
@@ -51,9 +54,10 @@
     .map-header{position:sticky;top:0;z-index:10;width:100%;background:linear-gradient(180deg,rgba(6,7,26,.98),transparent);padding:14px 20px 10px;display:flex;align-items:center;gap:14px;}
     .map-coins{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--gold);display:flex;align-items:center;gap:5px;}
     .map-title{font-family:'Fredoka One',cursive;font-size:1.3rem;flex:1;text-align:center;}
-    .map-signs-mini{display:flex;gap:6px;}
-    .sign-mini{width:28px;height:28px;border-radius:8px;background:rgba(100,0,150,.3);border:1.5px solid rgba(185,110,255,.4);display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .3s;}
+    .map-signs-mini{display:flex;gap:4px;flex-wrap:wrap;max-width:160px;}
+    .sign-mini{width:24px;height:24px;border-radius:6px;background:rgba(100,0,150,.3);border:1.5px solid rgba(185,110,255,.4);display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .3s;}
     .sign-mini.freed{background:rgba(255,215,0,.2);border-color:var(--gold);}
+    .sign-mini.letter-freed{background:rgba(255,215,0,.3);border-color:var(--gold);color:var(--gold);font-family:'Fredoka One',cursive;font-weight:700;}
     .map-scroll{width:100%;max-width:440px;margin:0 auto;padding:20px 20px 80px;}
     .world-card{border-radius:24px;padding:18px;margin-bottom:16px;position:relative;overflow:hidden;transition:transform .2s;}
     .world-card.locked{opacity:.4;filter:grayscale(.7);}
@@ -85,7 +89,11 @@
     .lvl-dot.boss{background:rgba(185,110,255,.25);border-color:var(--purple);font-size:1rem;}
     .lvl-dot.boss.done{background:rgba(185,110,255,.4);}
     .lvl-dot:hover:not(.locked){transform:scale(1.15);}
-    .sign-reward-dot{font-size:.9rem;margin-left:2px;opacity:.7;}
+    .world-signs-row{display:flex;gap:8px;margin-top:10px;align-items:center;}
+    .world-sign-chip{width:34px;height:34px;border-radius:10px;border:2px solid rgba(255,255,255,.2);background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all .3s;position:relative;}
+    .world-sign-chip.freed{background:rgba(255,215,0,.2);border-color:var(--gold);animation:pulseG 2s infinite;}
+    .world-sign-chip.letter{font-family:'Fredoka One',cursive;font-size:1.3rem;font-weight:700;}
+    .world-sign-chip.letter.freed{color:var(--gold);}
     .world-complete-banner{background:rgba(76,223,122,.12);border:1px solid var(--green);border-radius:10px;text-align:center;padding:6px 12px;margin-top:10px;font-size:.85rem;color:var(--green);font-weight:700;}
     #s-question{max-width:500px;width:100%;margin:0 auto;}
     .tier-strip{width:100%;text-align:center;font-size:.78rem;font-weight:700;padding:4px 0 10px;letter-spacing:.05em;}
@@ -121,6 +129,7 @@
     .overlay.active{display:flex;}
     .rescue-box{background:linear-gradient(135deg,#0d1f7a,#1a2f9a);border:3px solid var(--gold);border-radius:28px;padding:30px 24px;text-align:center;max-width:320px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
     .rescue-sign{font-size:5rem;line-height:1;animation:signRescue .6s cubic-bezier(.34,1.56,.64,1) forwards;display:block;margin:10px auto 14px;}
+    .rescue-sign.letter{font-family:'Fredoka One',cursive;color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,.8);}
     .rescue-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--gold);margin-bottom:6px;}
     .rescue-desc{font-size:.9rem;opacity:.8;line-height:1.45;margin-bottom:16px;}
     .btn-rescue-ok{font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#ff6b35,var(--gold));border:none;color:#1a0000;font-size:1rem;padding:10px 28px;border-radius:30px;cursor:pointer;transition:transform .2s;}
@@ -162,13 +171,15 @@
     .bw-stat{display:flex;justify-content:space-between;font-size:.9rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.07);}
     .bw-stat:last-child{border:none;}
     .bw-val{font-weight:700;color:var(--gold);}
-    #s-victoria{text-align:center;max-width:480px;}
-    .vic-crown{font-size:4rem;animation:glow 2s infinite;display:block;margin-bottom:10px;}
-    .vic-title{font-family:'Fredoka One',cursive;font-size:2.4rem;background:linear-gradient(135deg,var(--gold),var(--purple),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
-    .vic-sub{font-size:1rem;opacity:.8;margin-bottom:24px;line-height:1.55;}
-    .signs-gallery{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:20px 0 28px;}
-    .sign-freed{width:60px;height:60px;border-radius:16px;background:rgba(255,215,0,.15);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.8rem;animation:signRescue .5s ease both;}
-    .vic-stars{font-size:1.8rem;letter-spacing:8px;margin-bottom:18px;}
+    /* VICTORIA */
+    #s-victoria{text-align:center;max-width:500px;padding:30px 20px;}
+    .vic-calc-wrap{animation:calcFloat 3s ease-in-out infinite,calcGlow 2s ease-in-out infinite;margin-bottom:20px;}
+    .vic-signs-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0;}
+    .vic-sign-chip{width:52px;height:52px;border-radius:14px;background:rgba(255,215,0,.15);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.6rem;animation:signRescue .5s ease both;}
+    .vic-coqui-word{display:flex;gap:10px;justify-content:center;margin:20px 0 24px;}
+    .vic-letter{font-family:'Fredoka One',cursive;font-size:3rem;color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,.7),0 0 40px rgba(255,215,0,.4);animation:letterReveal .5s cubic-bezier(.34,1.56,.64,1) both;}
+    .vic-title{font-family:'Fredoka One',cursive;font-size:1.8rem;background:linear-gradient(135deg,var(--gold),var(--purple),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
+    .vic-sub{font-size:.95rem;opacity:.8;margin-bottom:20px;line-height:1.55;}
     .btn-replay{font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#7c4dff,var(--purple));border:none;color:white;font-size:1.1rem;padding:13px 36px;border-radius:50px;cursor:pointer;transition:transform .2s;}
     .btn-replay:hover{transform:scale(1.06);}
     #s-diag-q{max-width:500px;width:100%;margin:0 auto;}
@@ -190,7 +201,7 @@
   <div class="intro-tag">📖 El mundo matemático</div>
   <div class="intro-title">¡Bienvenido al<br>Mundo Matemático!</div>
   <div class="intro-name" id="intro-name">Gera</div>
-  <div class="intro-story">El malvado <strong>Coqui Cero</strong> ha robado todos los signos matemáticos del reino. ¡Sin ellos, nadie puede sumar, restar ni multiplicar! 😱<br><br>Solo <strong id="intro-name2">Gera</strong>, con la ayuda de <strong>Coqui</strong> y <strong>Cleto</strong>, puede recorrer los 5 mundos mágicos y rescatarlos uno por uno. 🦸</div>
+  <div class="intro-story">El malvado <strong>Coqui Cero</strong> ha robado los signos matemáticos y las letras del reino. ¡Sin ellos, nadie puede sumar ni escribir! 😱<br><br>Solo <strong id="intro-name2">Gera</strong>, con la ayuda de <strong>Coqui</strong> y <strong>Cleto</strong>, puede recorrer los 5 mundos y rescatar cada signo y cada letra. 🦸</div>
   <div class="intro-signs" id="intro-signs-locked"></div>
   <button class="btn-adventure" id="btn-go-map" onclick="goMap()" style="display:none">¡Comenzar la aventura! ⚔️</button>
   <br>
@@ -236,7 +247,7 @@
 </div>
 <div class="overlay" id="ov-rescue">
   <div class="rescue-box">
-    <div style="font-size:.8rem;color:var(--gold);font-weight:700;opacity:.8;margin-bottom:6px;">🔓 ¡SIGNO RESCATADO!</div>
+    <div style="font-size:.8rem;color:var(--gold);font-weight:700;opacity:.8;margin-bottom:6px;" id="rescue-label">🔓 ¡SIGNO RESCATADO!</div>
     <span class="rescue-sign" id="rescue-sign-char">+</span>
     <div class="rescue-title" id="rescue-title">¡Rescataste el signo +!</div>
     <div class="rescue-desc" id="rescue-desc">El signo de la suma vuelve al reino.</div>
@@ -304,11 +315,11 @@
   <button class="btn-continue" onclick="afterBossWin()">¡Siguiente mundo! 🗺️</button>
 </div>
 <div class="screen" id="s-victoria">
-  <div class="vic-crown">👑</div>
+  <div class="vic-calc-wrap" id="vic-calc"></div>
   <div class="vic-title" id="vic-title">¡Lo lograste!</div>
-  <div class="vic-sub" id="vic-sub">¡Rescataste todos los signos!</div>
-  <div class="signs-gallery" id="signs-gallery"></div>
-  <div class="vic-stars">⭐⭐⭐⭐⭐</div>
+  <div class="vic-sub" id="vic-sub">¡Rescataste todos los signos y las letras del reino!</div>
+  <div class="vic-signs-row" id="vic-signs-row"></div>
+  <div class="vic-coqui-word" id="vic-coqui-word"></div>
   <div style="font-size:.9rem;opacity:.7;margin-bottom:20px" id="vic-coins"></div>
   <button class="btn-replay" onclick="location.reload()">🔄 Jugar de nuevo</button>
 </div>
@@ -335,33 +346,36 @@
   </div>
 </div>
 <script>
+// ═══ SIGNOS: 3 por mundo [signo1, signo2, letra]
+// Rescate: signo1 tras nivel 2, signo2 tras nivel 4, letra tras derrotar jefe
 const WORLD_SIGNS=[
-  [{char:'+',name:'el signo +',desc:'¡El signo de la SUMA vuelve al reino! ➕'},
-   {char:'−',name:'el signo −',desc:'¡El signo de la RESTA está libre! ➖'},
-   {char:'=',name:'el signo =',desc:'¡El signo IGUAL regresó! 🟰'},
-   {char:'>',name:'el signo >',desc:'¡El signo MAYOR QUE fue rescatado! 📊'},
-   {char:'∞',name:'el símbolo ∞',desc:'¡El Mundo 1 es tuyo, campeón! 🌟'}],
-  [{char:'×',name:'el signo ×',desc:'¡El signo de MULTIPLICAR vuelve! ✖️'},
-   {char:'÷',name:'el signo ÷',desc:'¡El signo de DIVIDIR está libre! ➗'},
-   {char:'²',name:'el símbolo ²',desc:'¡El signo de POTENCIA rescatado! 🔢'},
-   {char:'√',name:'el símbolo √',desc:'¡La RAÍZ CUADRADA libre! 🧮'},
-   {char:'∑',name:'el símbolo ∑',desc:'¡El Mundo 2 conquistado! 🏆'}],
-  [{char:'½',name:'el signo ½',desc:'¡La MITAD vuelve al reino! 🍕'},
-   {char:'¼',name:'el signo ¼',desc:'¡Un CUARTO fue rescatado! 🎂'},
-   {char:'¾',name:'el signo ¾',desc:'¡Tres cuartos está de vuelta! 🌟'},
-   {char:'.',name:'el punto decimal',desc:'¡El PUNTO DECIMAL libre! 🔹'},
-   {char:'%',name:'el signo %',desc:'¡El Mundo 3 es tuyo! 💯'}],
-  [{char:'📐',name:'la escuadra',desc:'¡La ESCUADRA vuelve! 📐'},
-   {char:'P',name:'el perímetro P',desc:'¡El símbolo de PERÍMETRO rescatado! 🔲'},
-   {char:'A',name:'el área A',desc:'¡El símbolo de ÁREA libre! 🟦'},
-   {char:'°',name:'el símbolo °',desc:'¡El GRADO fue rescatado! 🌀'},
-   {char:'π',name:'el símbolo π',desc:'¡El Mundo 4 es completamente tuyo! 🥧'}],
-  [{char:'x',name:'la incógnita x',desc:'¡La INCÓGNITA X fue liberada! 🔍'},
-   {char:'?',name:'el signo ?',desc:'¡El signo de PREGUNTA vuelve! ❓'},
-   {char:'→',name:'la flecha →',desc:'¡La FLECHA fue rescatada! ➡️'},
-   {char:'🧠',name:'el cerebro mágico',desc:'¡El CEREBRO MÁGICO está libre! 🧠'},
-   {char:'∞²',name:'el infinito²',desc:'¡¡¡Derrotaste a Coqui Cero para siempre!!! 👑'}],
+  [{char:'+', name:'el signo +', desc:'¡El signo de la SUMA vuelve al reino! Ahora podemos juntar cosas otra vez. ➕', isLetter:false},
+   {char:'−', name:'el signo −', desc:'¡El signo de la RESTA está libre! Podemos quitar y comparar. ➖', isLetter:false},
+   {char:'C', name:'la letra C', desc:'¡La letra C fue rescatada! Ya tenemos la primera letra del nombre secreto... 🔤', isLetter:true}],
+  [{char:'×', name:'el signo ×', desc:'¡El signo de MULTIPLICAR vuelve! Ahora podemos hacer grupos iguales. ✖️', isLetter:false},
+   {char:'÷', name:'el signo ÷', desc:'¡El signo de DIVIDIR está libre! Podemos repartir en partes iguales. ➗', isLetter:false},
+   {char:'O', name:'la letra O', desc:'¡La letra O fue rescatada! El nombre secreto se va formando... 🔤', isLetter:true}],
+  [{char:'>', name:'el signo >', desc:'¡El signo MAYOR QUE fue rescatado! Podemos comparar quién es más grande. 📊', isLetter:false},
+   {char:'<', name:'el signo <', desc:'¡El signo MENOR QUE está libre! Ahora sabemos quién es el más pequeño. 📉', isLetter:false},
+   {char:'Q', name:'la letra Q', desc:'¡La letra Q fue rescatada! Tres letras del nombre secreto... 🔤', isLetter:true}],
+  [{char:'√', name:'el símbolo √', desc:'¡La RAÍZ CUADRADA vuelve al reino! Podemos encontrar el número secreto. 🧮', isLetter:false},
+   {char:'²', name:'el símbolo ²', desc:'¡El EXPONENTE fue rescatado! Podemos multiplicar un número por sí mismo. 🔢', isLetter:false},
+   {char:'U', name:'la letra U', desc:'¡La letra U fue rescatada! Ya casi se forma el nombre secreto... 🔤', isLetter:true}],
+  [{char:'x', name:'la x función', desc:'¡La x FUNCIÓN vuelve al reino! El número desconocido ya tiene nombre. 🔍', isLetter:false},
+   {char:'=', name:'el signo =', desc:'¡El signo IGUAL regresó! Ahora sabemos cuándo dos cosas son lo mismo. 🟰', isLetter:false},
+   {char:'I', name:'la letra I', desc:'¡La letra I fue rescatada! Las cinco letras juntas forman... ¡COQUI! 🐸✨', isLetter:true}],
 ];
+
+// Índice de rescate por mundo:
+// li=1 (nivel 2, índice 1) → sign index 0 (signo1)  [a mitad del mundo]
+// li=3 (nivel 4, índice 3) → sign index 1 (signo2)  [antes del jefe]
+// isBoss → sign index 2 (letra)                     [tras derrotar jefe]
+function getSignIndexForLevel(li, isBoss){
+  if(isBoss) return 2;
+  if(li===1) return 0;
+  if(li===3) return 1;
+  return -1; // no rescue this level
+}
 
 const WORLDS=[
  {id:0,name:'Mundo 1: Sumas y Restas',emoji:'➕',desc:'Los primeros pasos del reino',color:'world-0',hearts:3,
@@ -378,11 +392,7 @@ const WORLDS=[
        {t:'Sumas',q:'¿Cuánto es\n7 + 4?',a:11,o:[10,11,12,9],h:'Siete más cuatro'},
        {t:'Sumas',q:'¿Cuánto es\n8 + 3?',a:11,o:[10,11,12,9],h:'Ocho más tres'},
        {t:'Sumas',q:'¿Cuánto es\n6 + 6?',a:12,o:[11,12,13,10],h:'Doble de seis'}],
-    3:[{t:'Sumas',q:'¿Cuánto es\n8 + 5?',a:13,o:[12,13,14,11],h:'¡Cuenta con los dedos! 🤚'},
-       {t:'Sumas',q:'¿Cuánto es\n7 + 6?',a:13,o:[12,13,14,11],h:'Siete más seis'},
-       {t:'Sumas',q:'¿Cuánto es\n9 + 8?',a:17,o:[16,17,18,15],h:'Cerca de 10+8'},
-       {t:'Sumas',q:'¿Cuánto es\n8 + 8?',a:16,o:[15,16,17,14],h:'El doble de 8'},
-       {t:'Sumas',q:'¿Cuánto es\n9 + 9?',a:18,o:[17,18,19,16],h:'El doble de 9'}]}},
+    3:null}},  
    {name:'Restas',tiers:{
     1:[{t:'Restas',q:'¿Cuánto es\n5 − 2?',a:3,o:[2,3,4,1],h:'Quita 2 del 5 ✂️'},
        {t:'Restas',q:'¿Cuánto es\n6 − 3?',a:3,o:[2,3,4,1],h:'Seis menos tres'},
@@ -394,11 +404,7 @@ const WORLDS=[
        {t:'Restas',q:'¿Cuánto es\n10 − 5?',a:5,o:[4,5,6,3],h:'La mitad de 10'},
        {t:'Restas',q:'¿Cuánto es\n11 − 4?',a:7,o:[6,7,8,5],h:'Once menos cuatro'},
        {t:'Restas',q:'¿Cuánto es\n12 − 5?',a:7,o:[6,7,8,5],h:'Doce menos cinco'}],
-    3:[{t:'Restas',q:'¿Cuánto es\n15 − 7?',a:8,o:[7,8,9,6],h:'¡Paso a paso! 🧩'},
-       {t:'Restas',q:'¿Cuánto es\n14 − 6?',a:8,o:[7,8,9,6],h:'Catorce menos seis'},
-       {t:'Restas',q:'¿Cuánto es\n16 − 8?',a:8,o:[7,8,9,6],h:'El doble de 8'},
-       {t:'Restas',q:'¿Cuánto es\n20 − 9?',a:11,o:[10,11,12,9],h:'Veinte menos nueve'},
-       {t:'Restas',q:'¿Cuánto es\n18 − 9?',a:9,o:[8,9,10,7],h:'El doble de 9'}]}},
+    3:null}},
    {name:'Sumas y restas mixtas',tiers:{
     1:[{t:'Sumas',q:'¿Cuánto es\n3 + 4?',a:7,o:[6,7,8,5],h:'Tres más cuatro'},
        {t:'Sumas',q:'¿Cuánto es\n2 + 6?',a:8,o:[7,8,9,6],h:'Dos más seis'},
@@ -410,11 +416,7 @@ const WORLDS=[
        {t:'Sumas',q:'¿Cuánto es\n8 + 4?',a:12,o:[11,12,13,10],h:'Ocho más cuatro'},
        {t:'Restas',q:'¿Cuánto es\n13 − 5?',a:8,o:[7,8,9,6],h:'Trece menos cinco'},
        {t:'Sumas',q:'¿Cuánto es\n7 + 5?',a:12,o:[11,12,13,10],h:'Siete más cinco'}],
-    3:[{t:'Sumas',q:'¿Cuánto es\n10 + 8?',a:18,o:[17,18,19,16],h:'¡Cerca del 20!'},
-       {t:'Restas',q:'¿Cuánto es\n17 − 8?',a:9,o:[8,9,10,7],h:'Diecisiete menos ocho'},
-       {t:'Sumas',q:'¿Cuánto es\n12 + 7?',a:19,o:[18,19,20,17],h:'Doce más siete'},
-       {t:'Restas',q:'¿Cuánto es\n20 − 8?',a:12,o:[11,12,13,10],h:'Veinte menos ocho'},
-       {t:'Sumas',q:'¿Cuánto es\n11 + 9?',a:20,o:[19,20,21,18],h:'El gran 20'}]}},
+    3:null}},
    {name:'🧠 Problemas razonados',tiers:{
     1:[{t:'Razonamiento',story:'NOMBRE tiene 3 manzanas. Su mamá le da 2 más. ¿Cuántas tiene ahora?',q:'¿Cuántas manzanas\ntiene ahora?',a:5,o:[4,5,6,3],h:'3 más 2 🍎'},
        {t:'Razonamiento',story:'Cleto tiene 6 globos. Se le van 2 volando. ¿Cuántos le quedan?',q:'¿Cuántos globos\nle quedan?',a:4,o:[3,4,5,2],h:'6 menos 2 🎈'},
@@ -442,11 +444,7 @@ const WORLDS=[
        {t:'JEFE',q:'¿Cuánto es\n12 + 6?',a:18,o:[17,18,19,16],h:'¡Concentración! 🔥'},
        {t:'JEFE',q:'¿Cuánto es\n20 − 8?',a:12,o:[11,12,13,10],h:'¡Ya casi! 💪'},
        {t:'JEFE',q:'¿Cuánto es\n9 + 9?',a:18,o:[17,18,19,20],h:'¡El golpe final! 🏆'}],
-    3:[{t:'JEFE',q:'¿Cuánto es\n19 − 8?',a:11,o:[10,11,12,9],h:'¡El jefe ataca! 👿'},
-       {t:'JEFE',q:'¿Cuánto es\n13 + 8?',a:21,o:[19,20,21,22],h:'Coqui Cero ríe... 😈'},
-       {t:'JEFE',q:'¿Cuánto es\n20 − 7?',a:13,o:[12,13,14,11],h:'¡Concentración! 🔥'},
-       {t:'JEFE',q:'¿Cuánto es\n16 + 5?',a:21,o:[20,21,22,19],h:'¡Ya casi! 💪'},
-       {t:'JEFE',q:'¿Cuánto es\n25 − 8?',a:17,o:[16,17,18,15],h:'¡El golpe final! 🏆'}]}}
+    3:null}}
   ]},
  {id:1,name:'Mundo 2: Multiplicación',emoji:'✖️',desc:'Grupos iguales con Cleto',color:'world-1',hearts:3,
   boss_taunt:'🌙 ¿La tabla del 4, NOMBRE? ¡A ver si puedes!',diagTopics:['Grupos'],
@@ -462,11 +460,7 @@ const WORLDS=[
        {t:'Tabla×2',q:'¿Cuánto es\n2 × 6?',a:12,o:[10,12,14,8],h:'Dos por seis'},
        {t:'Tabla×5',q:'¿Cuánto es\n5 × 3?',a:15,o:[10,15,20,12],h:'Termina en 0 o 5'},
        {t:'Tabla×5',q:'¿Cuánto es\n5 × 4?',a:20,o:[15,20,25,10],h:'Cinco por cuatro'}],
-    3:[{t:'Tabla×3',q:'¿Cuánto es\n3 × 4?',a:12,o:[9,12,15,8],h:'Tres por cuatro 🧩'},
-       {t:'Tabla×4',q:'¿Cuánto es\n4 × 3?',a:12,o:[8,12,16,10],h:'Cuatro por tres'},
-       {t:'Tabla×3',q:'¿Cuánto es\n3 × 6?',a:18,o:[15,18,21,12],h:'Tres por seis'},
-       {t:'Tabla×4',q:'¿Cuánto es\n4 × 4?',a:16,o:[12,16,20,8],h:'Cuatro por cuatro'},
-       {t:'Tabla×4',q:'¿Cuánto es\n4 × 5?',a:20,o:[16,20,24,12],h:'Cuatro por cinco'}]}},
+    3:null}},
    {name:'Tabla del 2 y del 5',tiers:{
     1:[{t:'Tabla×2',q:'¿Cuánto es\n2 × 1?',a:2,o:[1,2,3,4],h:'Tabla del 2: dobles'},
        {t:'Tabla×2',q:'¿Cuánto es\n2 × 2?',a:4,o:[2,4,6,3],h:'Dos por dos'},
@@ -478,11 +472,7 @@ const WORLDS=[
        {t:'Tabla×5',q:'¿Cuánto es\n5 × 3?',a:15,o:[10,15,20,12],h:'Termina en 0 o 5'},
        {t:'Tabla×5',q:'¿Cuánto es\n5 × 4?',a:20,o:[15,20,25,10],h:'Cinco por cuatro'},
        {t:'Tabla×5',q:'¿Cuánto es\n5 × 6?',a:30,o:[25,30,35,20],h:'Cinco por seis'}],
-    3:[{t:'Tabla×2',q:'¿Cuánto es\n2 × 9?',a:18,o:[16,18,20,14],h:'Dos por nueve'},
-       {t:'Tabla×5',q:'¿Cuánto es\n5 × 7?',a:35,o:[30,35,40,25],h:'Cinco por siete'},
-       {t:'Tabla×2',q:'¿Cuánto es\n2 × 8?',a:16,o:[14,16,18,12],h:'Dos por ocho'},
-       {t:'Tabla×5',q:'¿Cuánto es\n5 × 8?',a:40,o:[35,40,45,30],h:'Cinco por ocho'},
-       {t:'Tabla×5',q:'¿Cuánto es\n5 × 9?',a:45,o:[40,45,50,35],h:'Cinco por nueve'}]}},
+    3:null}},
    {name:'Tabla del 3 y del 4',tiers:{
     1:[{t:'Tabla×3',q:'¿Cuánto es\n3 × 1?',a:3,o:[2,3,4,6],h:'Tabla del 3'},
        {t:'Tabla×3',q:'¿Cuánto es\n3 × 2?',a:6,o:[3,6,9,4],h:'Tres por dos'},
@@ -494,11 +484,7 @@ const WORLDS=[
        {t:'Tabla×4',q:'¿Cuánto es\n4 × 3?',a:12,o:[8,12,16,10],h:'Cuatro por tres'},
        {t:'Tabla×4',q:'¿Cuánto es\n4 × 4?',a:16,o:[12,16,20,8],h:'Cuatro por cuatro'},
        {t:'Tabla×4',q:'¿Cuánto es\n4 × 5?',a:20,o:[16,20,24,12],h:'Cuatro por cinco'}],
-    3:[{t:'Tabla×3',q:'¿Cuánto es\n3 × 7?',a:21,o:[18,21,24,15],h:'Tres por siete'},
-       {t:'Tabla×3',q:'¿Cuánto es\n3 × 8?',a:24,o:[21,24,27,18],h:'Tres por ocho'},
-       {t:'Tabla×4',q:'¿Cuánto es\n4 × 6?',a:24,o:[20,24,28,16],h:'Cuatro por seis'},
-       {t:'Tabla×4',q:'¿Cuánto es\n4 × 7?',a:28,o:[24,28,32,20],h:'Cuatro por siete'},
-       {t:'Tabla×4',q:'¿Cuánto es\n4 × 8?',a:32,o:[28,32,36,24],h:'Cuatro por ocho'}]}},
+    3:null}},
    {name:'🧠 Problemas razonados',tiers:{
     1:[{t:'Razonamiento',story:'Coqui tiene 2 cajas con 3 galletas cada una. ¿Cuántas galletas en total?',q:'¿Cuántas galletas\nen total?',a:6,o:[5,6,7,4],h:'2×3 🍪'},
        {t:'Razonamiento',story:'NOMBRE pone 2 flores en cada mesa. Hay 3 mesas. ¿Cuántas flores necesita?',q:'¿Cuántas flores\nnecesita?',a:6,o:[5,6,7,4],h:'3×2 🌸'},
@@ -526,11 +512,7 @@ const WORLDS=[
        {t:'JEFE',q:'¿Cuánto es\n4 × 6?',a:24,o:[20,24,28,16],h:'¡Concentración! 🔥'},
        {t:'JEFE',q:'¿Cuánto es\n2 × 9?',a:18,o:[16,18,20,14],h:'Coqui tiembla... 💪'},
        {t:'JEFE',q:'¿Cuánto es\n5 × 7?',a:35,o:[30,35,40,25],h:'¡El golpe final! 🏆'}],
-    3:[{t:'JEFE',q:'¿Cuánto es\n4 × 7?',a:28,o:[24,28,32,20],h:'😈 Cuatro por siete'},
-       {t:'JEFE',q:'¿Cuánto es\n3 × 8?',a:24,o:[21,24,27,18],h:'Tres por ocho 🧠'},
-       {t:'JEFE',q:'¿Cuánto es\n4 × 8?',a:32,o:[28,32,36,24],h:'¡Concentración! 🔥'},
-       {t:'JEFE',q:'¿Cuánto es\n5 × 9?',a:45,o:[40,45,50,35],h:'Coqui tiembla... 💪'},
-       {t:'JEFE',q:'¿Cuánto es\n3 × 9?',a:27,o:[24,27,30,21],h:'¡El golpe final! 🏆'}]}}
+    3:null}}
   ]},
  {id:2,name:'Mundo 3: Fracciones',emoji:'🍕',desc:'Cortando el pastel con Coqui',color:'world-2',hearts:3,
   boss_taunt:'😏 ¿Cuánto es la mitad de 18, NOMBRE? ¡Demuéstralo!',diagTopics:['Mitad'],
@@ -546,11 +528,7 @@ const WORLDS=[
        {t:'Mitad',q:'¿Cuánto es la\nmitad de 16?',a:8,o:[6,7,8,9],h:'16 entre 2'},
        {t:'Mitad',q:'¿Cuánto es la\nmitad de 18?',a:9,o:[8,9,10,6],h:'18 entre 2'},
        {t:'Mitad',q:'¿Cuánto es la\nmitad de 20?',a:10,o:[8,10,12,5],h:'20 entre 2'}],
-    3:[{t:'Mitad',q:'¿Cuánto es la\nmitad de 24?',a:12,o:[10,12,14,8],h:'24 entre 2'},
-       {t:'Mitad',q:'¿Cuánto es la\nmitad de 30?',a:15,o:[12,15,18,10],h:'30 entre 2'},
-       {t:'¼',q:'¿Cuánto es\n¼ de 8?',a:2,o:[1,2,4,8],h:'8 entre 4'},
-       {t:'¼',q:'¿Cuánto es\n¼ de 12?',a:3,o:[2,3,4,6],h:'12 entre 4'},
-       {t:'¼',q:'¿Cuánto es\n¼ de 16?',a:4,o:[3,4,5,8],h:'16 entre 4'}]}},
+    3:null}},
    {name:'Mitad y cuarto',tiers:{
     1:[{t:'Fracciones',q:'¿Cuál es más\ngrande?\n½ o ¼',a:'½',o:['½','¼','igual','¾'],h:'¿Cuánto del pastel? 🎂'},
        {t:'Mitad',q:'¿Cuánto es la\nmitad de 4?',a:2,o:[1,2,3,4],h:'4 entre 2'},
@@ -562,11 +540,7 @@ const WORLDS=[
        {t:'Fracciones',q:'¿Cuál es más\ngrande?\n¾ o ½',a:'¾',o:['½','¾','igual','¼'],h:'Tres cuartos vs mitad'},
        {t:'Fracciones',q:'¿Cuánto es\n¼ + ¼?',a:'½',o:['¼','½','¾',1],h:'Dos cuartos = mitad'},
        {t:'¼',q:'¿Cuánto es\n¼ de 20?',a:5,o:[4,5,6,10],h:'20 entre 4'}],
-    3:[{t:'Fracciones',q:'¿Cuánto es\n¾ de 8?',a:6,o:[4,6,8,2],h:'¼ de 8 = 2, ×3'},
-       {t:'Fracciones',q:'¿Cuánto es\n¾ de 12?',a:9,o:[6,9,12,3],h:'¼ de 12 = 3, ×3'},
-       {t:'¼',q:'¿Cuánto es\n¼ de 24?',a:6,o:[4,6,8,12],h:'24 entre 4'},
-       {t:'Fracciones',q:'¿Cuánto es\n¾ de 20?',a:15,o:[10,15,20,5],h:'¼ de 20 = 5, ×3'},
-       {t:'Fracciones',q:'¿Cuánto es\n¼ + ¾?',a:1,o:['½','¾',1,'1½'],h:'¡Completa el entero!'}]}},
+    3:null}},
    {name:'Fracciones de números',tiers:{
     1:[{t:'Fracciones',q:'¿Cuánto es\n½ de 6?',a:3,o:[2,3,4,1],h:'6 entre 2'},
        {t:'Fracciones',q:'¿Cuánto es\n½ de 8?',a:4,o:[3,4,5,2],h:'8 entre 2'},
@@ -610,11 +584,7 @@ const WORLDS=[
        {t:'JEFE',q:'¿Cuánto es la\nmitad de 20?',a:10,o:[8,10,12,5],h:'¡Concentración! 🔥'},
        {t:'JEFE',q:'¿Cuál es más\ngrande?\n¾ o ½',a:'¾',o:['½','¾','igual','¼'],h:'Coqui tiembla... 💪'},
        {t:'JEFE',q:'¿Cuánto es\n¼ + ¼?',a:'½',o:['¼','½','¾',1],h:'¡El golpe final! 🏆'}],
-    3:[{t:'JEFE',q:'¿Cuánto es\n¾ de 12?',a:9,o:[6,9,12,3],h:'😈 ¼×3'},
-       {t:'JEFE',q:'¿Cuánto es\n¼ de 24?',a:6,o:[4,6,8,12],h:'24 entre 4 🧠'},
-       {t:'JEFE',q:'¿Cuánto es la\nmitad de 30?',a:15,o:[12,15,18,10],h:'¡Concentración! 🔥'},
-       {t:'JEFE',q:'¿Cuánto es\n¾ de 20?',a:15,o:[10,15,20,5],h:'Coqui tiembla... 💪'},
-       {t:'JEFE',q:'¿Cuánto es\n¾ de 24?',a:18,o:[12,18,24,6],h:'¡El golpe final! 🏆'}]}}
+    3:null}}
   ]},
  {id:3,name:'Mundo 4: Formas y Medidas',emoji:'📐',desc:'Figuras mágicas con Cleto',color:'world-3',hearts:3,
   boss_taunt:'🌙 ¿Cuántos lados tiene un hexágono, NOMBRE? ¡A ver!',diagTopics:['Figuras'],
@@ -630,11 +600,7 @@ const WORLDS=[
        {t:'Figuras',q:'¿Cuántos vértices\ntiene un triángulo?',a:3,o:[2,3,4,5],h:'Un vértice por punta'},
        {t:'Perímetro',q:'Cuadrado de lado 3.\n¿Cuánto mide\nsu contorno?',a:12,o:[9,12,15,6],h:'4 × 3 📏'},
        {t:'Perímetro',q:'Triángulo con lados\n3, 3 y 3.\n¿Cuánto mide\nsu contorno?',a:9,o:[6,9,12,3],h:'Suma los 3 lados'}],
-    3:[{t:'Perímetro',q:'Rectángulo de\n5 × 3.\n¿Cuánto mide\nsu contorno?',a:16,o:[15,16,18,8],h:'2×5 + 2×3'},
-       {t:'Área',q:'Cuadrado de lado 3.\n¿Cuánto espacio ocupa?',a:9,o:[6,9,12,3],h:'3 × 3'},
-       {t:'Área',q:'Rectángulo de 4 × 2.\n¿Cuánto espacio ocupa?',a:8,o:[6,8,10,12],h:'4 × 2'},
-       {t:'Área',q:'Cuadrado de lado 4.\n¿Cuánto espacio ocupa?',a:16,o:[12,16,20,8],h:'4 × 4'},
-       {t:'Perímetro',q:'Cuadrado de lado 5.\n¿Cuánto mide\nsu contorno?',a:20,o:[15,20,25,10],h:'4 × 5'}]}},
+    3:null}},
    {name:'Medir el contorno',tiers:{
     1:[{t:'Perímetro',q:'Cuadrado de lado 2.\n¿Cuánto mide\nsu contorno?',a:8,o:[4,8,12,6],h:'4 × 2 📏'},
        {t:'Perímetro',q:'Cuadrado de lado 3.\n¿Cuánto mide\nsu contorno?',a:12,o:[9,12,15,6],h:'4 × 3'},
@@ -646,11 +612,7 @@ const WORLDS=[
        {t:'Perímetro',q:'Triángulo de\n2, 3 y 4.\n¿Cuánto mide\nsu contorno?',a:9,o:[7,9,11,8],h:'2+3+4'},
        {t:'Perímetro',q:'Rectángulo de\n5 × 3.\n¿Cuánto mide\nsu contorno?',a:16,o:[15,16,18,8],h:'2×5 + 2×3'},
        {t:'Perímetro',q:'Triángulo de\n4, 4 y 4.\n¿Cuánto mide\nsu contorno?',a:12,o:[8,12,16,4],h:'3 × 4'}],
-    3:[{t:'Perímetro',q:'Rectángulo de\n6 × 4.\n¿Cuánto mide\nsu contorno?',a:20,o:[10,20,24,16],h:'2×6 + 2×4'},
-       {t:'Perímetro',q:'Hexágono regular\nde lado 3.\n¿Cuánto mide\nsu contorno?',a:18,o:[15,18,21,12],h:'6 × 3'},
-       {t:'Perímetro',q:'Cuadrado de lado 6.\n¿Cuánto mide\nsu contorno?',a:24,o:[18,24,30,12],h:'4 × 6'},
-       {t:'Perímetro',q:'Triángulo de\n5, 6 y 7.\n¿Cuánto mide\nsu contorno?',a:18,o:[15,18,20,16],h:'5+6+7'},
-       {t:'Perímetro',q:'Cuadrado con\nperímetro 20.\n¿Cuánto mide\nsu lado?',a:5,o:[4,5,6,10],h:'20 ÷ 4'}]}},
+    3:null}},
    {name:'Medir el espacio',tiers:{
     1:[{t:'Área',q:'Cuadrado de lado 2.\n¿Cuánto espacio ocupa?',a:4,o:[2,4,8,6],h:'2 × 2'},
        {t:'Área',q:'Cuadrado de lado 3.\n¿Cuánto espacio ocupa?',a:9,o:[6,9,12,3],h:'3 × 3'},
@@ -662,11 +624,7 @@ const WORLDS=[
        {t:'Área',q:'Cuadrado de lado 5.\n¿Cuánto espacio ocupa?',a:25,o:[20,25,30,10],h:'5 × 5'},
        {t:'Área',q:'Rectángulo de 6 × 2.\n¿Cuánto espacio ocupa?',a:12,o:[8,12,16,6],h:'6 × 2'},
        {t:'Área',q:'Rectángulo de 4 × 4.\n¿Cuánto espacio ocupa?',a:16,o:[8,16,20,12],h:'4 × 4'}],
-    3:[{t:'Área',q:'Cuadrado de lado 6.\n¿Cuánto espacio ocupa?',a:36,o:[30,36,42,24],h:'6 × 6'},
-       {t:'Área',q:'Rectángulo de 7 × 3.\n¿Cuánto espacio ocupa?',a:21,o:[18,21,24,10],h:'7 × 3'},
-       {t:'Área',q:'Cuadrado de lado 7.\n¿Cuánto espacio ocupa?',a:49,o:[42,49,56,14],h:'7 × 7'},
-       {t:'Área',q:'Cuadrado con área 25.\n¿Cuánto mide\nsu lado?',a:5,o:[4,5,6,10],h:'¿Qué × qué = 25?'},
-       {t:'Área',q:'Rectángulo de 8 × 4.\n¿Cuánto espacio ocupa?',a:32,o:[24,32,40,12],h:'8 × 4'}]}},
+    3:null}},
    {name:'🧠 Problemas razonados',tiers:{
     1:[{t:'Razonamiento',story:'NOMBRE quiere poner cinta alrededor de un cuadrado de lado 3 cm. ¿Cuánta cinta necesita?',q:'¿Cuánta cinta\nnecesita?',a:12,o:[9,12,15,6],h:'4 × 3 cm 🖼️'},
        {t:'Razonamiento',story:'Cleto dibuja un triángulo con tres lados de 3 cm cada uno. ¿Cuánto mide el contorno?',q:'¿Cuánto mide\nel contorno?',a:9,o:[6,9,12,3],h:'3 × 3 cm 📐'},
@@ -694,11 +652,7 @@ const WORLDS=[
        {t:'JEFE',q:'Rectángulo de 5 × 4.\n¿Cuánto espacio ocupa?',a:20,o:[18,20,22,9],h:'5 × 4 🔥'},
        {t:'JEFE',q:'Cuadrado de lado 5.\n¿Cuánto espacio ocupa?',a:25,o:[20,25,30,10],h:'Coqui tiembla... 💪'},
        {t:'JEFE',q:'Rectángulo de 6 × 3.\n¿Cuánto mide\nsu contorno?',a:18,o:[9,18,24,12],h:'¡El golpe final! 🏆'}],
-    3:[{t:'JEFE',q:'Cuadrado de lado 7.\n¿Cuánto espacio ocupa?',a:49,o:[42,49,56,14],h:'😈 7 × 7'},
-       {t:'JEFE',q:'Hexágono regular\nde lado 5.\n¿Cuánto mide\nsu contorno?',a:30,o:[25,30,35,20],h:'6 × 5 🧠'},
-       {t:'JEFE',q:'Rectángulo de 7 × 4.\n¿Cuánto espacio ocupa?',a:28,o:[22,28,32,11],h:'7 × 4 🔥'},
-       {t:'JEFE',q:'Cuadrado con área 49.\n¿Cuánto mide\nsu lado?',a:7,o:[6,7,8,9],h:'¿Qué×qué=49? 💪'},
-       {t:'JEFE',q:'Rectángulo de 8 × 5.\n¿Cuánto espacio ocupa?',a:40,o:[35,40,45,13],h:'¡El golpe final! 🏆'}]}}
+    3:null}}
   ]},
  {id:4,name:'Mundo 5: Patrones y Lógica',emoji:'🔭',desc:'Descubriendo secretos numéricos',color:'world-4',hearts:3,
   boss_taunt:'😈 ¡Los patrones son mi reino, NOMBRE! ¿Puedes descifrarlos?',diagTopics:['Patrones'],
@@ -786,13 +740,88 @@ const WORLDS=[
   ]}
 ];
 
+// ═══ MOTOR HÍBRIDO DE PREGUNTAS ═══
+// Mundos 1 y 2: generación procedural para tier 3 (Maestro)
+// Mundos 3,4,5: banco ampliado, se usan los tiers existentes
+
+function genSuma(tier){
+  const ranges={1:[1,6],2:[4,12],3:[8,18]};
+  const [lo,hi]=ranges[tier];
+  const a=lo+Math.floor(Math.random()*(hi-lo+1));
+  const b=lo+Math.floor(Math.random()*(hi-lo+1));
+  const ans=a+b;
+  const wrongs=genWrongOptions(ans,4);
+  return {t:'Sumas',q:`¿Cuánto es\n${a} + ${b}?`,a:ans,o:wrongs,h:`${a} más ${b} 🔢`};
+}
+function genResta(tier){
+  const ranges={1:[1,6],2:[4,12],3:[8,18]};
+  const [lo,hi]=ranges[tier];
+  let a=lo+Math.floor(Math.random()*(hi-lo+1));
+  let b=lo+Math.floor(Math.random()*(a-lo+1));
+  if(b>a)b=a;
+  const ans=a-b;
+  const wrongs=genWrongOptions(ans,4);
+  return {t:'Restas',q:`¿Cuánto es\n${a} − ${b}?`,a:ans,o:wrongs,h:`${a} menos ${b} ✂️`};
+}
+function genMulti(tier){
+  const pairs={1:[[2,2],[2,3],[2,4],[3,2],[3,3]],2:[[2,5],[2,6],[3,4],[3,5],[4,4],[5,3],[5,4]],3:[[3,6],[3,7],[3,8],[4,6],[4,7],[4,8],[5,6],[5,7],[6,6]]};
+  const pool=pairs[tier];
+  const [a,b]=pool[Math.floor(Math.random()*pool.length)];
+  const ans=a*b;
+  const wrongs=genWrongOptions(ans,4);
+  return {t:`Tabla×${a}`,q:`¿Cuánto es\n${a} × ${b}?`,a:ans,o:wrongs,h:`${a} por ${b} 🎯`};
+}
+function genWrongOptions(correct,count){
+  const opts=new Set([correct]);
+  const deltas=[1,2,3,4,5,6,7,8];
+  let tries=0;
+  while(opts.size<count&&tries<40){
+    tries++;
+    const d=deltas[Math.floor(Math.random()*deltas.length)];
+    const sign=Math.random()<0.5?1:-1;
+    const wrong=correct+sign*d;
+    if(wrong>0&&wrong!==correct)opts.add(wrong);
+  }
+  // fill if needed
+  let x=1;
+  while(opts.size<count){if(!opts.has(x))opts.add(x);x++;}
+  return [...opts];
+}
+
+// Get questions for a level — uses generator for M0/M1 tier3, else bank
+function getQuestionsForLevel(wi,li,tier){
+  const level=WORLDS[wi].levels[li];
+  const isBoss=!!level.isBoss;
+  // For M0 (Sumas/Restas) and M1 (Multiplicación) tier 3 non-boss normal levels: generate
+  if(!isBoss&&tier===3&&(wi===0||wi===1)){
+    const qs=[];
+    const seenAnswers=new Set();
+    let tries=0;
+    while(qs.length<5&&tries<30){
+      tries++;
+      let q;
+      if(wi===0){
+        q=Math.random()<0.5?genSuma(3):genResta(3);
+      } else {
+        q=genMulti(3);
+      }
+      if(!seenAnswers.has(q.a)){seenAnswers.add(q.a);qs.push(q);}
+    }
+    return qs;
+  }
+  // Otherwise use static bank; tier null falls back to tier 2 or 1
+  const bank=level.tiers[tier]||level.tiers[2]||level.tiers[1];
+  // Return shuffled copy
+  return [...bank].sort(()=>Math.random()-.5);
+}
+
 // ═══ ESTADO ═══
 let PLAYER_NAME='Gera';
 const TIER_LABELS={1:'🔵 Explorador',2:'🟡 Aventurero',3:'🟣 Maestro'};
 const TIER_CLS={1:'ts-1',2:'ts-2',3:'ts-3'};
 
-function loadState(){const r=localStorage.getItem('mat_v4');return r?JSON.parse(r):{coins:0,worlds:{},freedSigns:[],diagCompleted:false,diagResults:{},playerName:''};}
-function saveState(s){localStorage.setItem('mat_v4',JSON.stringify(s));}
+function loadState(){const r=localStorage.getItem('mat_v5');return r?JSON.parse(r):{coins:0,worlds:{},freedSigns:[],diagCompleted:false,diagResults:{},playerName:''};}
+function saveState(s){localStorage.setItem('mat_v5',JSON.stringify(s));}
 function getWS(s,wi){if(!s.worlds[wi])s.worlds[wi]={unlockedLevel:0,levelStars:{},bossBeaten:false,tierOverrides:{}};return s.worlds[wi];}
 function pn(t){return typeof t==='string'?t.replace(/NOMBRE/g,PLAYER_NAME):t;}
 
@@ -806,7 +835,13 @@ function calcTier(wi){
   const p=tc/tt;return p>=.7?3:p>=.4?2:1;
 }
 function getEffectiveTier(wi,li){const state=loadState();const ws=getWS(state,wi);if(ws.tierOverrides&&ws.tierOverrides[li]!==undefined)return ws.tierOverrides[li];return calcTier(wi);}
-function saveTierOverride(wi,li,tier){const state=loadState();const ws=getWS(state,wi);if(!ws.tierOverrides)ws.tierOverrides={};ws.tierOverrides[li]=tier;saveState(state);}
+function saveTierOverride(wi,li,tier){const state=loadState();const ws=getWS(state,wi);if(!ws.tierOverrides)ws.tierOverrides={};ws.tierOverrides[li]=Math.min(3,tier);saveState(state);}
+
+// ═══ SIGN RESCUE HELPERS ═══
+// freedSigns stores strings like "wi-signIdx" (0,1=signs, 2=letter)
+function signKey(wi,signIdx){return `${wi}-${signIdx}`;}
+function isSignFreed(state,wi,signIdx){return (state.freedSigns||[]).includes(signKey(wi,signIdx));}
+function freeSign(state,wi,signIdx){if(!state.freedSigns)state.freedSigns=[];const k=signKey(wi,signIdx);if(!state.freedSigns.includes(k))state.freedSigns.push(k);}
 
 // ═══ NAV ═══
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
@@ -818,6 +853,7 @@ function irIntro(){
   const v=document.getElementById('nombre-input').value.trim();if(v.length<2)return;
   PLAYER_NAME=v;const state=loadState();state.playerName=PLAYER_NAME;saveState(state);
   const cont=document.getElementById('intro-signs-locked');cont.innerHTML='';
+  // Show all 15 locked items (10 signs + 5 letters)
   WORLD_SIGNS.forEach(w=>w.forEach(s=>{const d=document.createElement('div');d.className='sign-cage';d.textContent=s.char;cont.appendChild(d);}));
   document.getElementById('intro-name').textContent=PLAYER_NAME;
   document.getElementById('intro-name2').textContent=PLAYER_NAME;
@@ -833,8 +869,14 @@ function irIntro(){
 function buildMap(){
   const state=loadState();
   document.getElementById('coin-count').textContent=state.coins;
+  // mini signs bar — show all 15 slots
   const bar=document.getElementById('map-signs-mini');bar.innerHTML='';
-  WORLD_SIGNS.forEach((ws,wi)=>ws.forEach((s,li)=>{const key=`${wi}-${li}`;const freed=state.freedSigns&&state.freedSigns.includes(key);const d=document.createElement('div');d.className='sign-mini'+(freed?' freed':'');d.title=s.name;d.textContent=freed?s.char:'🔒';bar.appendChild(d);}));
+  WORLD_SIGNS.forEach((ws,wi)=>ws.forEach((s,si)=>{
+    const freed=isSignFreed(state,wi,si);
+    const d=document.createElement('div');
+    d.className='sign-mini'+(freed?' freed':'')+(s.isLetter?' letter-freed':'');
+    d.title=s.name;d.textContent=freed?s.char:'🔒';bar.appendChild(d);
+  }));
   const scroll=document.getElementById('map-scroll');scroll.innerHTML='';
   WORLDS.forEach((world,wi)=>{
     const ws=getWS(state,wi);const worldUnlocked=wi===0||getWS(state,wi-1).bossBeaten;
@@ -847,14 +889,17 @@ function buildMap(){
       const isCurrent=worldUnlocked&&li===ws.unlockedLevel&&!isDone;
       let cls='lvl-dot';if(isBoss)cls+=' boss';else if(isRazon)cls+=' razonado';
       if(!isUnlocked)cls+=' locked';else if(isDone)cls+=' done';else if(isCurrent)cls+=' current';
-      const freed=state.freedSigns&&state.freedSigns.includes(`${wi}-${li}`);
       const label=isBoss?'👿':(isRazon?'🧠':(li+1));
       dots+=`<div class="${cls}" onclick="${isUnlocked?`startLevel(${wi},${li})`:''}" title="${pn(lvl.name)}">${isDone?'':label}</div>`;
-      if(freed&&!isBoss)dots+=`<span class="sign-reward-dot">${WORLD_SIGNS[wi][li].char}</span>`;
     });
+    // Signs row for this world
+    const signsHtml=WORLD_SIGNS[wi].map((s,si)=>{
+      const freed=isSignFreed(state,wi,si);
+      return `<div class="world-sign-chip${freed?' freed':''}${s.isLetter?' letter':''}" title="${s.name}">${freed?s.char:'🔒'}</div>`;
+    }).join('');
     const prog=worldUnlocked?(ws.bossBeaten?'✅ ¡Mundo conquistado!':`Nivel ${Math.min(ws.unlockedLevel+1,world.levels.length)} de ${world.levels.length}`):'🔒 Termina el mundo anterior';
     const badge=worldUnlocked&&state.diagCompleted?`<span class="tier-badge tier-${tier}">${TIER_LABELS[tier]}</span>`:'';
-    card.innerHTML=`<div class="world-top"><div class="world-emoji">${world.emoji}</div><div class="world-info"><div class="world-name">${world.name}</div><div class="world-desc">${world.desc}</div><div class="world-progress">${prog}</div>${badge}</div>${!worldUnlocked?'<div class="lock-icon">🔒</div>':''}</div><div class="levels-row">${dots}</div>${ws.bossBeaten?`<div class="world-complete-banner">🏆 ¡${PLAYER_NAME} conquistó este mundo!</div>`:''}`;
+    card.innerHTML=`<div class="world-top"><div class="world-emoji">${world.emoji}</div><div class="world-info"><div class="world-name">${world.name}</div><div class="world-desc">${world.desc}</div><div class="world-progress">${prog}</div>${badge}</div>${!worldUnlocked?'<div class="lock-icon">🔒</div>':''}</div><div class="levels-row">${dots}</div><div class="world-signs-row">${signsHtml}</div>${ws.bossBeaten?`<div class="world-complete-banner">🏆 ¡${PLAYER_NAME} conquistó este mundo!</div>`:''}`;
     scroll.appendChild(card);
   });
 }
@@ -881,17 +926,15 @@ function startLevel(wi,li){
   activeWi=wi;activeLi=li;qIsBoss=!!level.isBoss;
   if(qIsBoss){document.getElementById('boss-taunt').textContent=pn(world.boss_taunt);showScreen('s-boss-intro');return;}
   activeTier=getEffectiveTier(wi,li);
-  const pool=level.tiers[activeTier];
-  activeQs=[...pool].sort(()=>Math.random()-.5).map(q=>({...q,q:pn(q.q),story:q.story?pn(q.story):undefined}));
+  activeQs=getQuestionsForLevel(wi,li,activeTier).map(q=>({...q,q:pn(q.q),story:q.story?pn(q.story):undefined}));
   activeQi=0;qScore=0;qHearts=world.hearts;qCorrect=0;
   document.getElementById('q-progress').className='progress-fill pf-normal';
   updateTierStrip();showQuestion();showScreen('s-question');
 }
 function startBossBattle(){
-  const world=WORLDS[activeWi];const level=world.levels[activeLi];
+  const world=WORLDS[activeWi];
   activeTier=getEffectiveTier(activeWi,activeLi);
-  const pool=level.tiers[activeTier];
-  activeQs=[...pool].sort(()=>Math.random()-.5).map(q=>({...q,q:pn(q.q)}));
+  activeQs=getQuestionsForLevel(activeWi,activeLi,activeTier).map(q=>({...q,q:pn(q.q)}));
   activeQi=0;qScore=0;qHearts=world.hearts;qCorrect=0;
   document.getElementById('q-progress').className='progress-fill pf-boss';
   updateTierStrip();showQuestion();showScreen('s-question');
@@ -946,7 +989,7 @@ function showCeroFail(){
   document.getElementById('ov-cero').classList.add('active');
 }
 
-// ═══ FIN DE NIVEL ═══
+// ═══ FIN DE NIVEL + RESCATE DE SIGNOS ═══
 function finishLevel(){
   const total=activeQs.length;const pct=qCorrect/total;
   const stars=pct>=.8?3:pct>=.5?2:1;const coins=stars*10+(qIsBoss?30:0);
@@ -955,25 +998,40 @@ function finishLevel(){
   if(qIsBoss)ws.bossBeaten=true;
   else ws.unlockedLevel=Math.max(ws.unlockedLevel,activeLi+1);
   state.coins=(state.coins||0)+coins;
+  // Tier up if 3 stars
   let tieredUp=false;
   if(!qIsBoss&&stars===3&&activeTier<3){saveTierOverride(activeWi,activeLi+1,activeTier+1);tieredUp=true;}
-  const signKey=`${activeWi}-${activeLi}`;
-  if(!state.freedSigns)state.freedSigns=[];
-  if(!state.freedSigns.includes(signKey))state.freedSigns.push(signKey);
+  // Determine which sign to rescue for this level
+  const signIdx=getSignIndexForLevel(activeLi,qIsBoss);
+  let signToRescue=null;
+  if(signIdx>=0&&!isSignFreed(state,activeWi,signIdx)){
+    freeSign(state,activeWi,signIdx);
+    signToRescue=WORLD_SIGNS[activeWi][signIdx];
+  }
   saveState(state);
-  showRescueOverlay(activeWi,activeLi,()=>{
+  // Chain: (sign rescue?) → (tier up?) → level done
+  const afterSign=()=>{
     if(tieredUp&&!qIsBoss)showTierUp(activeTier+1,()=>showLevelDone(stars,coins,qIsBoss,total,true));
     else showLevelDone(stars,coins,qIsBoss,total,false);
-  });
+  };
+  if(signToRescue){
+    showRescueOverlay(signToRescue,()=>afterSign());
+  } else {
+    afterSign();
+  }
 }
-function showRescueOverlay(wi,li,cb){
-  const sign=WORLD_SIGNS[wi][li];
-  document.getElementById('rescue-sign-char').textContent=sign.char;
+
+function showRescueOverlay(sign,cb){
+  document.getElementById('rescue-label').textContent=sign.isLetter?'🔤 ¡LETRA RESCATADA!':'🔓 ¡SIGNO RESCATADO!';
+  const el=document.getElementById('rescue-sign-char');
+  el.textContent=sign.char;
+  el.className='rescue-sign'+(sign.isLetter?' letter':'');
   document.getElementById('rescue-title').textContent=`¡Rescataste ${sign.name}!`;
   document.getElementById('rescue-desc').textContent=sign.desc;
   document.getElementById('ov-rescue').classList.add('active');
   document.getElementById('rescue-ok-btn').onclick=()=>{document.getElementById('ov-rescue').classList.remove('active');cb();};
 }
+
 let tierUpCb=null;
 function showTierUp(newTier,cb){
   tierUpCb=cb;
@@ -1016,17 +1074,86 @@ function showLevelDone(stars,coins,isBoss,total,tieredUp){
 function afterLevel(){goMap();}
 function afterBossWin(){goMap();}
 
-// ═══ VICTORIA ═══
+// ═══ VICTORIA FINAL ═══
 function showVictoria(){
   const state=loadState();
   document.getElementById('vic-title').textContent=`¡Lo lograste, ${PLAYER_NAME}!`;
-  document.getElementById('vic-sub').textContent=`¡Rescataste todos los signos matemáticos del reino y derrotaste a Coqui Cero para siempre! 🦸`;
+  document.getElementById('vic-sub').textContent=`¡Rescataste todos los signos matemáticos y las letras del reino. ¡Coqui Cero fue derrotado para siempre! 🦸`;
   document.getElementById('vic-coins').textContent=`Total de monedas: ${state.coins} 🪙`;
-  const gallery=document.getElementById('signs-gallery');gallery.innerHTML='';
-  WORLD_SIGNS.forEach((ws,wi)=>ws.forEach((s,li)=>{
-    const d=document.createElement('div');d.className='sign-freed';
-    d.style.animationDelay=`${(wi*5+li)*0.1}s`;d.textContent=s.char;d.title=s.name;gallery.appendChild(d);
+
+  // Calculadora dorada SVG
+  document.getElementById('vic-calc').innerHTML=`
+    <svg width="160" height="200" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="calcBody" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffe066"/>
+          <stop offset="100%" stop-color="#b8860b"/>
+        </linearGradient>
+        <linearGradient id="calcScreen" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#e8f5e9"/>
+          <stop offset="100%" stop-color="#a5d6a7"/>
+        </linearGradient>
+      </defs>
+      <!-- Body -->
+      <rect x="10" y="10" width="140" height="180" rx="18" ry="18" fill="url(#calcBody)" stroke="#ffd700" stroke-width="3"/>
+      <rect x="16" y="16" width="128" height="168" rx="14" ry="14" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+      <!-- Screen -->
+      <rect x="22" y="24" width="116" height="44" rx="8" fill="url(#calcScreen)" stroke="#81c784" stroke-width="1.5"/>
+      <text x="128" y="56" text-anchor="end" font-size="22" font-family="monospace" font-weight="bold" fill="#1b5e20">C+Q=U</text>
+      <!-- Button grid 4×4 -->
+      <g fill="#7c5c00" stroke="#ffd700" stroke-width="1">
+        <!-- Row 1 -->
+        <rect x="22" y="78" width="25" height="22" rx="5"/>
+        <rect x="53" y="78" width="25" height="22" rx="5"/>
+        <rect x="84" y="78" width="25" height="22" rx="5"/>
+        <rect x="115" y="78" width="25" height="22" rx="5" fill="#5d4037"/>
+        <!-- Row 2 -->
+        <rect x="22" y="106" width="25" height="22" rx="5"/>
+        <rect x="53" y="106" width="25" height="22" rx="5"/>
+        <rect x="84" y="106" width="25" height="22" rx="5"/>
+        <rect x="115" y="106" width="25" height="22" rx="5" fill="#5d4037"/>
+        <!-- Row 3 -->
+        <rect x="22" y="134" width="25" height="22" rx="5"/>
+        <rect x="53" y="134" width="25" height="22" rx="5"/>
+        <rect x="84" y="134" width="25" height="22" rx="5"/>
+        <rect x="115" y="134" width="25" height="22" rx="5" fill="#5d4037"/>
+        <!-- Row 4 bottom -->
+        <rect x="22" y="162" width="56" height="22" rx="5" fill="#4a148c"/>
+        <rect x="84" y="162" width="25" height="22" rx="5"/>
+        <rect x="115" y="162" width="25" height="22" rx="5" fill="#5d4037"/>
+      </g>
+      <!-- Button labels -->
+      <g font-size="11" font-family="'Fredoka One',cursive" text-anchor="middle" fill="#ffd700">
+        <text x="34" y="93">7</text><text x="65" y="93">8</text><text x="96" y="93">9</text><text x="127" y="93" fill="white">÷</text>
+        <text x="34" y="121">4</text><text x="65" y="121">5</text><text x="96" y="121">6</text><text x="127" y="121" fill="white">×</text>
+        <text x="34" y="149">1</text><text x="65" y="149">2</text><text x="96" y="149">3</text><text x="127" y="149" fill="white">−</text>
+        <text x="50" y="177" fill="white">0</text><text x="96" y="177">.</text><text x="127" y="177" fill="white">+</text>
+      </g>
+      <!-- Stars sparkle -->
+      <text x="8" y="18" font-size="14">✨</text>
+      <text x="140" y="18" font-size="14">✨</text>
+      <text x="8" y="195" font-size="14">⭐</text>
+      <text x="140" y="195" font-size="14">⭐</text>
+    </svg>`;
+
+  // Signos rescatados (10 signos, no letras)
+  const signsRow=document.getElementById('vic-signs-row');signsRow.innerHTML='';
+  let delay=0;
+  WORLD_SIGNS.forEach((ws,wi)=>ws.filter(s=>!s.isLetter).forEach(s=>{
+    const d=document.createElement('div');d.className='vic-sign-chip';
+    d.style.animationDelay=`${delay}s`;delay+=0.08;
+    d.textContent=s.char;d.title=s.name;signsRow.appendChild(d);
   }));
+
+  // Letras COQUI reveladas una por una
+  const word=document.getElementById('vic-coqui-word');word.innerHTML='';
+  const letters=['C','O','Q','U','I'];
+  letters.forEach((l,i)=>{
+    const d=document.createElement('div');d.className='vic-letter';
+    d.style.animationDelay=`${0.8+i*0.25}s`;
+    d.textContent=l;word.appendChild(d);
+  });
+
   showScreen('s-victoria');
 }
 
